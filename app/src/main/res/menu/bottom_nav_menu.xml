@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="@string/editor"
+        android:icon="@drawable/ic_edit"
+        android:enabled="true"
+        android:id="@+id/bottom_nav_editor"/>
+    <item
+        android:title="@string/visualizer"
+        android:icon="@drawable/ic_visualizer"
+        android:enabled="true"
+        android:id="@+id/bottom_nav_visualizer"/>
+    <item
+        android:title="@string/home"
+        android:icon="@drawable/ic_home"
+        android:enabled="true"
+        android:id="@+id/bottom_nav_home"/>
+    <item
+        android:title="@string/predictor"
+        android:icon="@drawable/ic_predict"
+        android:enabled="true"
+        android:id="@+id/bottom_nav_predictor"/>
+    <item
+        android:title="@string/settings"
+        android:icon="@drawable/ic_more"
+        android:enabled="true"
+        android:id="@+id/bottom_nav_settings"/>
+
+</menu>
