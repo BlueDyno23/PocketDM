@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="420dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageView
+            android:id="@+id/dataset_item_image"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:src="@drawable/default_img"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/dataset_item_content_description" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:id="@+id/dataset_item_nickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DatasetNickName"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:layout_marginRight="8dp"/>
+                <TextView
+                    android:id="@+id/dataset_item_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:text="DatasetName"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/dataset_item_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="3"
+                android:minLines="3"
+                android:ellipsize="end"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:text="Some description and general information about the dataset goes here"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/dataset_item_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray"
+                    android:text="Version: 1.0"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:layout_marginRight="8dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/dataset_item_columns"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/gray"
+                        android:text="Columns: 5"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:layout_marginRight="8dp"/>
+                    <TextView
+                        android:id="@+id/dataset_item_rows"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/gray"
+                        android:text="Rows: 22"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:layout_marginRight="8dp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/dataset_item_date_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/gray"
+                        android:text="Date Created: 2022-01-01"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:layout_marginRight="8dp"/>
+                    <TextView
+                        android:id="@+id/dataset_item_date_modified"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/gray"
+                        android:text="Date Modified: 2022-01-01"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:layout_marginRight="8dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:dividerInsetStart="24dp"
+            app:dividerInsetEnd="24dp"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/dataset_item_open"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.ElevatedButton"
+                android:text="@string/dataset_item_open"
+                android:layout_marginRight="8dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/dataset_item_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.ElevatedButton"
+                android:text="@string/dataset_item_edit"
+                android:layout_marginRight="8dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/dataset_item_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.ElevatedButton"
+                android:text="@string/dataset_item_delete"/>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

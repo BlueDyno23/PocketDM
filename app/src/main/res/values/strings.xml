@@ -7,4 +7,9 @@
     <string name="editor">Editor</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fab_content_desc">Add a new dataset</string>
+    <string name="dataset_item_open">Open</string>
+    <string name="dataset_item_edit">Edit</string>
+    <string name="dataset_item_delete">Delete</string>
+    <string name="dataset_item_content_description">Image describing dataset</string>
 </resources>
