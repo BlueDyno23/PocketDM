@@ -11,21 +11,32 @@ import com.example.pocketdm.Fragments.HomeFragment;
 import com.example.pocketdm.Fragments.PredictorFragment;
 import com.example.pocketdm.Fragments.SettingsFragment;
 import com.example.pocketdm.Fragments.VisualizerFragment;
+import com.example.pocketdm.Models.DatasetModel;
 import com.example.pocketdm.R;
+import com.example.pocketdm.Utilities.SqlUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.List;
 
 public class BaseActivity extends AppCompatActivity {
 
     private FrameLayout fragmentsContainer;
     private BottomNavigationView bottomNavMenu;
+    public static List<DatasetModel> datasetModelList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
 
+        SqlUtils.initializeSqlUtils();
+        initFillDatasetModelList();
         initViews();
         initNavigation();
+    }
+
+    private void initFillDatasetModelList() {
+
     }
 
 
@@ -52,13 +63,13 @@ public class BaseActivity extends AppCompatActivity {
             }
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragments_container, fragment)
+                    .replace(fragmentsContainer.getId(), fragment)
                     .commit();
             return true;
         });
         bottomNavMenu.setSelectedItemId(R.id.bottom_nav_home);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragments_container, new HomeFragment())
+                .replace(fragmentsContainer.getId(), new HomeFragment())
                 .commit();
     }
 

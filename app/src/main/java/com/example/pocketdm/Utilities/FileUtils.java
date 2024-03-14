@@ -2,16 +2,15 @@ package com.example.pocketdm.Utilities;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -147,6 +146,41 @@ public class FileUtils {
     }
     public static String getFileName(String filePath){
         return filePath.substring(filePath.lastIndexOf("/")+1);
+    }
+
+    public static String getFilePathFromUri(Context context, Uri uri) {
+        String filePath = "";
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(context.getContentResolver().openInputStream(uri)));
+            String line;
+            if ((line = reader.readLine()) != null) {
+                filePath = line.trim(); // Assuming the first line contains the file path
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return filePath;
+    }
+
+    public static String getRawFileContentFromUri(Context context, Uri uri){
+        String raw_content = "";
+        try {
+            InputStream in = context.getContentResolver().openInputStream(uri);
+
+            BufferedReader r = new BufferedReader(new InputStreamReader(in));
+            StringBuilder total = new StringBuilder();
+            for (String line; (line = r.readLine()) != null; ) {
+                total.append(line).append('\n');
+            }
+
+            raw_content = total.toString();
+
+        }catch (Exception e) {
+
+        }
+
+        return raw_content;
     }
 
     public static void deleteFile(String filePath) {

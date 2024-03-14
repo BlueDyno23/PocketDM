@@ -9,13 +9,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.pocketdm.Activities.BaseActivity;
+import com.example.pocketdm.Adapters.DatasetItemsAdapter;
+import com.example.pocketdm.Models.DatasetModel;
 import com.example.pocketdm.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
+
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
-    FloatingActionButton fabAddDataset;
-    RecyclerView datasetItemsRecyclerView;
+    private FloatingActionButton fabAddDataset;
+    private RecyclerView datasetItemsRecyclerView;
+    private DatasetItemsAdapter datasetItemsAdapter;
+    private List<DatasetModel> datasetModelList;
 
     public HomeFragment() {
     }
@@ -33,6 +40,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
         initiateViews(view);
         return view;
     }
