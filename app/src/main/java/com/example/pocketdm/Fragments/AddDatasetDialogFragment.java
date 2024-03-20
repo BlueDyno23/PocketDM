@@ -42,9 +42,6 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
     private MaterialButton addDatasetButton;
     private MaterialButton uploadDatasetButton;
     private ActivityResultLauncher<String> filePickerLauncher;
-    private SqlUtils sqlutils;
-
-    private Uri selectedDatasetUri;
     public AddDatasetDialogFragment() {
     }
 
@@ -95,14 +92,10 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
         addDatasetButton.setOnClickListener(this);
         uploadDatasetButton.setOnClickListener(this);
 
-        sqlutils = SqlUtils.getInstance(getContext());
-
         filePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 uri -> {
                     if (FileUtils.getFileName(getActivity(), uri) != null && FileUtils.getFileName(getActivity(), uri).toLowerCase().endsWith(".csv")) {
-                        sqlutils.saveDatasetToSqlDb(getContext(), uri, String.valueOf(nicknameInput.getEditText().getText()));
-                        fillFields(FileUtils.getFileName(getContext(), uri));
-                        selectedDatasetUri = uri;
+
                     } else {
                         Toast.makeText(getContext(), "Please select a CSV file", Toast.LENGTH_SHORT).show();
                     }
@@ -117,45 +110,10 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.add_dataset_add_btn) {
-            if(checkFieldsAreFilled()){
 
-                sqlutils.saveDatasetToSqlDb(getContext(), selectedDatasetUri, String.valueOf(nicknameInput.getEditText().getText()));
-                dismiss();
-            }
         }
         else if (v.getId() == R.id.add_dataset_upload_btn) {
-            filePickerLauncher.launch("*/*");
+
         }
-    }
-
-    private void fillFields(String datasetName){
-        Cursor cursor = sqlutils.getReadableDatabase().query(datasetName, null, null, null, null, null, null);
-
-        datasetPathInput.getEditText().setText(selectedDatasetUri.toString());
-        nameInput.getEditText().setText(FileUtils.getFileName(getContext(), selectedDatasetUri));
-        columnsInput.getEditText().setText(cursor.getColumnCount());
-        rowsInput.getEditText().setText(cursor.getCount());
-
-    }
-
-    private boolean checkFieldsAreFilled() {
-        if(nicknameInput.getEditText().getText().toString().isEmpty() ||
-                nameInput.getEditText().getText().toString().isEmpty() ||
-                descriptionInput.getEditText().getText().toString().isEmpty() ||
-                versionInput.getEditText().getText().toString().isEmpty() ||
-                datasetPathInput.getEditText().getText().toString().isEmpty() ||
-                columnsInput.getEditText().getText().toString().isEmpty() ||
-                rowsInput.getEditText().getText().toString().isEmpty()) {
-            Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public void onDismiss(@NonNull DialogInterface dialog) {
-        super.onDismiss(dialog);
-
-        sqlutils.deleteDatasetFromSqlDb(String.valueOf(nicknameInput.getEditText().getText()));
     }
 }

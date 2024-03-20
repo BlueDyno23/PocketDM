@@ -22,14 +22,11 @@ public class BaseActivity extends AppCompatActivity {
 
     private FrameLayout fragmentsContainer;
     private BottomNavigationView bottomNavMenu;
-    public static List<DatasetModel> datasetModelList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-
-        SqlUtils.initializeSqlUtils();
         initFillDatasetModelList();
         initViews();
         initNavigation();
@@ -38,7 +35,6 @@ public class BaseActivity extends AppCompatActivity {
     private void initFillDatasetModelList() {
 
     }
-
 
     private void initViews()
     {

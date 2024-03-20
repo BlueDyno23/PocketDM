@@ -17,6 +17,12 @@ import java.util.List;
 
 public class FileUtils {
 
+    /**
+     * Gets a list of all files in given folder
+     * @param context Application context
+     * @param folderName Name of folder (inside application)
+     * @return A list of all files in folder
+     */
     public static List<String> getAllFilesInFolder(Context context, String folderName) {
         List<String> filePaths = new ArrayList<>();
 
@@ -37,7 +43,14 @@ public class FileUtils {
         return filePaths;
     }
 
-    public static String saveFile(Context context, Uri uri, String folderName) {
+    /**
+     * Copies a file from the application to the given folder (inside the application)
+     * @param context Application context
+     * @param uri The URI of the file
+     * @param folderName Name of the folder
+     * @return The path of the new file
+     */
+    public static String copyFileToApp(Context context, Uri uri, String folderName) {
         String destinationPath = context.getFilesDir() + File.separator + folderName;
 
         // Create the app folder if it doesn't exist
@@ -87,6 +100,15 @@ public class FileUtils {
             return null;
         }
     }
+
+    /**
+     * Saves a file to given folder under given name
+     * @param context Application / Activity context
+     * @param content Raw string content of the file
+     * @param folderName Name of the folder
+     * @param fileName Name of the file
+     * @return The path of the new file
+     */
     public static String saveString(Context context, String content, String folderName, String fileName) {
         String destinationPath = context.getFilesDir() + File.separator + folderName;
 
@@ -124,6 +146,12 @@ public class FileUtils {
         }
     }
 
+    /**
+     * Get the file name from the URI
+     * @param context Application / Activity context
+     * @param uri The URI path of the file
+     * @return The shortened file name (file.end)
+     */
     public static String getFileName(Context context, Uri uri) {
         String fileName = null;
         String scheme = uri.getScheme();
@@ -144,10 +172,22 @@ public class FileUtils {
 
         return fileName;
     }
+
+    /**
+     * Get the file name from the path
+     * @param filePath The path
+     * @return The shortened file name
+     */
     public static String getFileName(String filePath){
         return filePath.substring(filePath.lastIndexOf("/")+1);
     }
 
+    /**
+     * Get the file path from the URI
+     * @param context Application context
+     * @param uri The URI
+     * @return The file path
+     */
     public static String getFilePathFromUri(Context context, Uri uri) {
         String filePath = "";
         try {
@@ -162,6 +202,13 @@ public class FileUtils {
         }
         return filePath;
     }
+
+    /**
+     * Get the raw string content of the file
+     * @param context Application context
+     * @param uri The URI
+     * @return The string content
+     */
 
     public static String getRawFileContentFromUri(Context context, Uri uri){
         String raw_content = "";
@@ -182,6 +229,11 @@ public class FileUtils {
 
         return raw_content;
     }
+
+    /**
+     * Delete a file
+     * @param filePath The path of the file
+     */
 
     public static void deleteFile(String filePath) {
         File file = new File(filePath);
