@@ -6,8 +6,10 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -143,6 +145,31 @@ public class FileUtils {
                 Log.e("FileUtil", "Error writing string to file: " + e.getMessage());
                 return null;
             }
+        }
+    }
+
+    /**
+     * Appends a string to the end of a text file
+     *
+     * @param context  Application context
+     * @param fileName Name of the file to append to (located in app folder)
+     * @param content  String content to append
+     * @return True if successful, false otherwise
+     */
+    public static boolean appendStringToFile(Context context, String fileName, String content) {
+        String filePath = context.getFilesDir() + File.separator + fileName;
+        File file = new File(filePath);
+
+        try {
+            FileWriter fileWriter = new FileWriter(file, true); // true for append mode
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(content);
+            bufferedWriter.newLine(); // Append a new line
+            bufferedWriter.close();
+            return true;
+        } catch (IOException e) {
+            Log.e("FileUtil", "Error appending string to file: " + e.getMessage());
+            return false;
         }
     }
 

@@ -21,8 +21,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private FloatingActionButton fabAddDataset;
     private RecyclerView datasetItemsRecyclerView;
-
-
     private DatasetItemsAdapter datasetItemsAdapter;
     private List<DatasetModel> datasetModelList;
 

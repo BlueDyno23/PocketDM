@@ -5,18 +5,17 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.pocketdm.Fragments.EditorFragment;
 import com.example.pocketdm.Fragments.HomeFragment;
 import com.example.pocketdm.Fragments.PredictorFragment;
 import com.example.pocketdm.Fragments.SettingsFragment;
 import com.example.pocketdm.Fragments.VisualizerFragment;
-import com.example.pocketdm.Models.DatasetModel;
 import com.example.pocketdm.R;
-import com.example.pocketdm.Utilities.SqlUtils;
+import com.example.pocketdm.Utilities.HelperDb;
+import com.example.pocketdm.Utilities.SQLUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.List;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -27,13 +26,8 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-        initFillDatasetModelList();
         initViews();
         initNavigation();
-    }
-
-    private void initFillDatasetModelList() {
-
     }
 
     private void initViews()

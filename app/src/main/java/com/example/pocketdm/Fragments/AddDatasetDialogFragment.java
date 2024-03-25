@@ -1,19 +1,14 @@
 package com.example.pocketdm.Fragments;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,13 +16,12 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.example.pocketdm.Models.DatasetModel;
 import com.example.pocketdm.R;
 import com.example.pocketdm.Utilities.FileUtils;
-import com.example.pocketdm.Utilities.SqlUtils;
+import com.example.pocketdm.Utilities.HelperDb;
+import com.example.pocketdm.Utilities.SQLUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.android.material.textview.MaterialTextView;
 
 
 public class AddDatasetDialogFragment extends DialogFragment implements View.OnClickListener {
@@ -42,6 +36,10 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
     private MaterialButton addDatasetButton;
     private MaterialButton uploadDatasetButton;
     private ActivityResultLauncher<String> filePickerLauncher;
+
+    SQLUtils sqlUtils;
+    HelperDb helperDb;
+
     public AddDatasetDialogFragment() {
     }
 
@@ -53,6 +51,8 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
     @Override
     public void onStart() {
         super.onStart();
+        helperDb = new HelperDb(getContext());
+
         Dialog dialog = getDialog();
         if(dialog!=null)
         {
@@ -95,6 +95,13 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
         filePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 uri -> {
                     if (FileUtils.getFileName(getActivity(), uri) != null && FileUtils.getFileName(getActivity(), uri).toLowerCase().endsWith(".csv")) {
+                        sqlUtils = new SQLUtils(helperDb.getWritableDatabase());
+                        sqlUtils.fillTable(getContext(), nicknameInput.getEditText().getText().toString(), uri);
+
+                        rowsInput.getEditText().setText(String.valueOf(sqlUtils.getRowCount(nicknameInput.getEditText().getText().toString())));
+                        columnsInput.getEditText().setText(String.valueOf(sqlUtils.getColumnCount(nicknameInput.getEditText().getText().toString())));
+                        datasetPathInput.getEditText().setText(FileUtils.getFileName(getActivity(), uri));
+                        nameInput.getEditText().setText(FileUtils.getFileName(getActivity(), uri).split("\\.")[0]);
 
                     } else {
                         Toast.makeText(getContext(), "Please select a CSV file", Toast.LENGTH_SHORT).show();
@@ -110,10 +117,11 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.add_dataset_add_btn) {
-
+            // TODO verify user actually wanted to save the dataset
+            dismiss();
         }
         else if (v.getId() == R.id.add_dataset_upload_btn) {
-
+            filePickerLauncher.launch("*/*");
         }
     }
 }
