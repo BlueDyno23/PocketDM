@@ -11,8 +11,6 @@ public class DatasetModel {
     private String filePath;
     private int rowsCount;
     private int columnsCount;
-    private Date dateCreated;
-    private Date dateModified;
     //endregion
 
     //region Constructors
@@ -27,8 +25,6 @@ public class DatasetModel {
         this.filePath = filePath;
         this.rowsCount = rowsCount;
         this.columnsCount = columnsCount;
-        this.dateCreated = dateCreated;
-        this.dateModified = dateModified;
     }
     //endregion
 
@@ -86,22 +82,6 @@ public class DatasetModel {
 
     public void setColumnsCount(int columnsCount) {
         this.columnsCount = columnsCount;
-    }
-
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public Date getDateModified() {
-        return dateModified;
-    }
-
-    public void setDateModified(Date dateModified) {
-        this.dateModified = dateModified;
     }
     //endregion
 

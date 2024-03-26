@@ -96,7 +96,7 @@ public class SQLUtils {
             tableNames = new String[count];
             int index = 0;
             while (cursor.moveToNext()) {
-                String tableName = cursor.getString(cursor.getColumnIndex("name"));
+                String tableName = cursor.getString(Math.abs(cursor.getColumnIndex("name")));
                 tableNames[index++] = tableName;
             }
             cursor.close();
