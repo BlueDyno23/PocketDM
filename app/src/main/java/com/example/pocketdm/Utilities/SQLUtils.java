@@ -6,6 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import com.example.pocketdm.Models.DatasetModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SQLUtils {
     private SQLiteDatabase database;
 
@@ -103,4 +108,28 @@ public class SQLUtils {
         }
         return tableNames;
     }
+
+    public List<DatasetModel> getDatasetModels(String tableName) {
+        List<DatasetModel> datasetModelList = new ArrayList<>();
+        Cursor cursor = database.query(tableName, null, null, null, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                // Create DatasetModel object from cursor data
+                DatasetModel datasetModel = new DatasetModel();
+                datasetModel.setDatasetName(cursor.getString(Math.abs(cursor.getColumnIndex("datasetName"))));
+                datasetModel.setDatasetNickname(cursor.getString(Math.abs(cursor.getColumnIndex("datasetNickname"))));
+                datasetModel.setDatasetDescription(cursor.getString(Math.abs(cursor.getColumnIndex("datasetDescription"))));
+                datasetModel.setDatasetVersion(cursor.getDouble(Math.abs(cursor.getColumnIndex("datasetVersion"))));
+                datasetModel.setRowsCount(cursor.getInt(Math.abs(cursor.getColumnIndex("rowsCount"))));
+                datasetModel.setColumnsCount(cursor.getInt(Math.abs(cursor.getColumnIndex("columnsCount"))));
+
+                // Add DatasetModel object to list
+                datasetModelList.add(datasetModel);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return datasetModelList;
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.pocketdm.Fragments;
 
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.example.pocketdm.R;
 import com.example.pocketdm.Utilities.FileUtils;
 import com.example.pocketdm.Utilities.HelperDb;
+import com.example.pocketdm.Utilities.HelperSecretDb;
 import com.example.pocketdm.Utilities.SQLUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -30,7 +32,6 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
     private TextInputLayout nameInput;
     private TextInputLayout descriptionInput;
     private TextInputLayout versionInput;
-    private TextInputLayout datasetPathInput;
     private TextInputLayout columnsInput;
     private TextInputLayout rowsInput;
     private MaterialButton addDatasetButton;
@@ -83,7 +84,6 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
         nameInput = view.findViewById(R.id.add_dataset_name_input);
         descriptionInput = view.findViewById(R.id.add_dataset_description_input);
         versionInput = view.findViewById(R.id.add_dataset_version_input);
-        datasetPathInput = view.findViewById(R.id.add_dataset_path_input);
         columnsInput = view.findViewById(R.id.add_dataset_columns_input);
         rowsInput = view.findViewById(R.id.add_dataset_rows_input);
         addDatasetButton = view.findViewById(R.id.add_dataset_add_btn);
@@ -100,13 +100,27 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
 
                         rowsInput.getEditText().setText(String.valueOf(sqlUtils.getRowCount(nicknameInput.getEditText().getText().toString())));
                         columnsInput.getEditText().setText(String.valueOf(sqlUtils.getColumnCount(nicknameInput.getEditText().getText().toString())));
-                        datasetPathInput.getEditText().setText(FileUtils.getFileName(getActivity(), uri));
                         nameInput.getEditText().setText(FileUtils.getFileName(getActivity(), uri).split("\\.")[0]);
 
                     } else {
                         Toast.makeText(getContext(), "Please select a CSV file", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void addDatasetToDb(){
+        HelperSecretDb hsd = new HelperSecretDb(getContext());
+        SQLUtils utils = new SQLUtils(hsd.getWritableDatabase());
+
+        ContentValues cv = new ContentValues();
+        cv.put(HelperSecretDb.TBL_NAME, nameInput.getEditText().getText().toString());
+        cv.put(HelperSecretDb.TBL_NICKNAME, nicknameInput.getEditText().getText().toString());
+        cv.put(HelperSecretDb.TBL_DESCRIPTION, descriptionInput.getEditText().getText().toString());
+        cv.put(HelperSecretDb.TBL_VERSION, versionInput.getEditText().getText().toString());
+        cv.put(HelperSecretDb.TBL_COLUMNS, columnsInput.getEditText().getText().toString());
+        cv.put(HelperSecretDb.TBL_ROWS, rowsInput.getEditText().getText().toString());
+
+        utils.insertData(HelperSecretDb.HTBL_NAME, cv);
     }
 
     @Override
@@ -118,6 +132,7 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
     public void onClick(View v) {
         if(v.getId() == R.id.add_dataset_add_btn) {
             // TODO verify user actually wanted to save the dataset
+            addDatasetToDb();
             dismiss();
         }
         else if (v.getId() == R.id.add_dataset_upload_btn) {

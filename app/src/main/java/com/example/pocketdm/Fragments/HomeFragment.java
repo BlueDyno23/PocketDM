@@ -1,5 +1,7 @@
 package com.example.pocketdm.Fragments;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,8 +15,11 @@ import com.example.pocketdm.Activities.BaseActivity;
 import com.example.pocketdm.Adapters.DatasetItemsAdapter;
 import com.example.pocketdm.Models.DatasetModel;
 import com.example.pocketdm.R;
+import com.example.pocketdm.Utilities.HelperSecretDb;
+import com.example.pocketdm.Utilities.SQLUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
@@ -23,7 +28,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private RecyclerView datasetItemsRecyclerView;
     private DatasetItemsAdapter datasetItemsAdapter;
     private List<DatasetModel> datasetModelList;
-
+    private SQLiteDatabase database;
+    private SQLUtils sqlUtils;
     public HomeFragment() {
     }
 
@@ -49,6 +55,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         fabAddDataset = view.findViewById(R.id.fab_add_dataset);
         fabAddDataset.setOnClickListener(this);
         datasetItemsRecyclerView = view.findViewById(R.id.dataset_items_recyclerView);
+
+        getDatasetModelsList();
+        datasetItemsAdapter = new DatasetItemsAdapter(datasetModelList);
+        datasetItemsRecyclerView.setAdapter(datasetItemsAdapter);
+
     }
 
     @Override
@@ -58,4 +69,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             addDatasetDialogFragment.show(getChildFragmentManager(), "AddDatasetDialogFragment");
         }
     }
+
+    private void getDatasetModelsList() {
+        HelperSecretDb hsb = new HelperSecretDb(getContext());
+        SQLUtils sqlUtils = new SQLUtils(hsb.getReadableDatabase());
+
+        datasetModelList = sqlUtils.getDatasetModels(HelperSecretDb.HTBL_NAME);
+
+        datasetItemsAdapter = new DatasetItemsAdapter(datasetModelList);
+        datasetItemsRecyclerView.setAdapter(datasetItemsAdapter);
+    }
+
+
 }

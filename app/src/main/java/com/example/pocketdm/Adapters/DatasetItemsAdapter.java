@@ -48,8 +48,6 @@ public class DatasetItemsAdapter extends RecyclerView.Adapter<DatasetItemsAdapte
         private TextView versionTextView;
         private TextView columnsTextView;
         private TextView rowsTextView;
-        private TextView createdTextView;
-        private TextView modifiedTextView;
         private MaterialButton openButton;
         private MaterialButton editButton;
         private MaterialButton deleteButton;
@@ -63,8 +61,6 @@ public class DatasetItemsAdapter extends RecyclerView.Adapter<DatasetItemsAdapte
             versionTextView = itemView.findViewById(R.id.dataset_item_version);
             columnsTextView = itemView.findViewById(R.id.dataset_item_columns);
             rowsTextView = itemView.findViewById(R.id.dataset_item_rows);
-            createdTextView = itemView.findViewById(R.id.dataset_item_date_created);
-            modifiedTextView = itemView.findViewById(R.id.dataset_item_date_modified);
             openButton = itemView.findViewById(R.id.dataset_item_open);
             editButton = itemView.findViewById(R.id.dataset_item_edit);
             deleteButton = itemView.findViewById(R.id.dataset_item_delete);
@@ -77,8 +73,6 @@ public class DatasetItemsAdapter extends RecyclerView.Adapter<DatasetItemsAdapte
             versionTextView.setText((int) item.getDatasetVersion());
             columnsTextView.setText(item.getColumnsCount());
             rowsTextView.setText(item.getRowsCount());
-            createdTextView.setText((CharSequence) item.getDateCreated());
-            modifiedTextView.setText((CharSequence) item.getDateModified());
         }
     }
 }

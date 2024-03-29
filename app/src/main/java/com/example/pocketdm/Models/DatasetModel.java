@@ -8,7 +8,6 @@ public class DatasetModel {
     private String datasetNickname;
     private String datasetDescription;
     private double datasetVersion;
-    private String filePath;
     private int rowsCount;
     private int columnsCount;
     //endregion
@@ -22,7 +21,6 @@ public class DatasetModel {
         this.datasetNickname = datasetNickname;
         this.datasetDescription = datasetDescription;
         this.datasetVersion = datasetVersion;
-        this.filePath = filePath;
         this.rowsCount = rowsCount;
         this.columnsCount = columnsCount;
     }
@@ -58,14 +56,6 @@ public class DatasetModel {
 
     public void setDatasetVersion(double datasetVersion) {
         this.datasetVersion = datasetVersion;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
     }
 
     public int getRowsCount() {
