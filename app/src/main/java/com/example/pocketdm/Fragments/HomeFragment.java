@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -22,7 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements View.OnClickListener {
+public class HomeFragment extends Fragment implements View.OnClickListener, DatasetItemsAdapter.OnItemClickListener {
 
     private FloatingActionButton fabAddDataset;
     private RecyclerView datasetItemsRecyclerView;
@@ -76,9 +77,31 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         datasetModelList = sqlUtils.getDatasetModels(HelperSecretDb.HTBL_NAME);
 
-        datasetItemsAdapter = new DatasetItemsAdapter(datasetModelList);
+        datasetItemsAdapter = new DatasetItemsAdapter(datasetModelList, this);
+        datasetItemsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         datasetItemsRecyclerView.setAdapter(datasetItemsAdapter);
     }
 
 
+    @Override
+    public void onOpenClicked(int position) {
+        BaseActivity baseActivity = (BaseActivity) getActivity();
+        baseActivity.openDataset(datasetModelList.get(position).getDatasetNickname());
+    }
+
+    @Override
+    public void onEditClicked(int position) {
+
+    }
+
+    @Override
+    public void onDeleteClicked(int position) {
+        HelperSecretDb hsb = new HelperSecretDb(getContext());
+        SQLUtils sqlUtils = new SQLUtils(hsb.getWritableDatabase());
+
+        sqlUtils.deleteData(HelperSecretDb.HTBL_NAME, "name = ?", new String[]{datasetModelList.get(position).getDatasetName()});
+
+        sqlUtils = new SQLUtils(hsb.getWritableDatabase());
+        sqlUtils.dropTable(datasetModelList.get(position).getDatasetNickname());
+    }
 }

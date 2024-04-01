@@ -18,10 +18,18 @@ import org.w3c.dom.Text;
 import java.util.List;
 
 public class DatasetItemsAdapter extends RecyclerView.Adapter<DatasetItemsAdapter.ViewHolder> {
-    private List<DatasetModel> datasetModelList;
 
-    public DatasetItemsAdapter(List<DatasetModel> datasetModelList) {
+    public interface OnItemClickListener {
+        void onOpenClicked(int position);
+        void onEditClicked(int position);
+        void onDeleteClicked(int position);
+    }
+    private List<DatasetModel> datasetModelList;
+    private OnItemClickListener listener;
+
+    public DatasetItemsAdapter(List<DatasetModel> datasetModelList, OnItemClickListener listener) {
         this.datasetModelList = datasetModelList;
+        this.listener = listener;
     }
     @NonNull
     @Override
@@ -41,7 +49,7 @@ public class DatasetItemsAdapter extends RecyclerView.Adapter<DatasetItemsAdapte
         return datasetModelList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView nicknameTextView;
         private TextView nameTextView;
         private TextView descriptionTextView;
@@ -64,15 +72,37 @@ public class DatasetItemsAdapter extends RecyclerView.Adapter<DatasetItemsAdapte
             openButton = itemView.findViewById(R.id.dataset_item_open);
             editButton = itemView.findViewById(R.id.dataset_item_edit);
             deleteButton = itemView.findViewById(R.id.dataset_item_delete);
+
+            openButton.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onOpenClicked(position);
+                }
+            });
+
+            editButton.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onEditClicked(position);
+                }
+            });
+
+            deleteButton.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onDeleteClicked(position);
+                }
+            });
         }
 
         public void bind(DatasetModel item) {
             nicknameTextView.setText(item.getDatasetNickname());
             nameTextView.setText(item.getDatasetName());
             descriptionTextView.setText(item.getDatasetDescription());
-            versionTextView.setText((int) item.getDatasetVersion());
-            columnsTextView.setText(item.getColumnsCount());
-            rowsTextView.setText(item.getRowsCount());
+            versionTextView.setText("v" + String.valueOf(item.getDatasetVersion())); // Convert to String
+            columnsTextView.setText("columns\t"+String.valueOf(item.getColumnsCount())); // Convert to String
+            rowsTextView.setText("rows\t"+String.valueOf(item.getRowsCount())); // Convert to String
         }
+
     }
 }

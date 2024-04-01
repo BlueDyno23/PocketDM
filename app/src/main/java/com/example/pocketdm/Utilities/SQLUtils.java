@@ -89,6 +89,10 @@ public class SQLUtils {
         }
     }
 
+    public void dropTable(String tableName) {
+        database.execSQL("DROP TABLE IF EXISTS " + tableName);
+    }
+
     /**
      * Get all table names in the SQLite database
      * @return An array of table names
@@ -117,12 +121,12 @@ public class SQLUtils {
             do {
                 // Create DatasetModel object from cursor data
                 DatasetModel datasetModel = new DatasetModel();
-                datasetModel.setDatasetName(cursor.getString(Math.abs(cursor.getColumnIndex("datasetName"))));
-                datasetModel.setDatasetNickname(cursor.getString(Math.abs(cursor.getColumnIndex("datasetNickname"))));
-                datasetModel.setDatasetDescription(cursor.getString(Math.abs(cursor.getColumnIndex("datasetDescription"))));
-                datasetModel.setDatasetVersion(cursor.getDouble(Math.abs(cursor.getColumnIndex("datasetVersion"))));
-                datasetModel.setRowsCount(cursor.getInt(Math.abs(cursor.getColumnIndex("rowsCount"))));
-                datasetModel.setColumnsCount(cursor.getInt(Math.abs(cursor.getColumnIndex("columnsCount"))));
+                datasetModel.setDatasetName(cursor.getString(Math.abs(cursor.getColumnIndex("name"))));
+                datasetModel.setDatasetNickname(cursor.getString(Math.abs(cursor.getColumnIndex("nickname"))));
+                datasetModel.setDatasetDescription(cursor.getString(Math.abs(cursor.getColumnIndex("description"))));
+                datasetModel.setDatasetVersion(cursor.getDouble(Math.abs(cursor.getColumnIndex("version"))));
+                datasetModel.setRowsCount(cursor.getInt(Math.abs(cursor.getColumnIndex("rows"))));
+                datasetModel.setColumnsCount(cursor.getInt(Math.abs(cursor.getColumnIndex("columns"))));
 
                 // Add DatasetModel object to list
                 datasetModelList.add(datasetModel);
@@ -132,4 +136,24 @@ public class SQLUtils {
         return datasetModelList;
     }
 
+    public DatasetModel getDatasetModel(String datasetNickname) {
+        Cursor cursor = database.query(HelperSecretDb.HTBL_NAME, null, HelperSecretDb.TBL_NICKNAME + " = ?", new String[]{datasetNickname}, null, null, null);
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    DatasetModel datasetModel = new DatasetModel();
+                    datasetModel.setDatasetName(cursor.getString(Math.abs(cursor.getColumnIndex("name"))));
+                    datasetModel.setDatasetNickname(cursor.getString(Math.abs(cursor.getColumnIndex("nickname"))));
+                    datasetModel.setDatasetDescription(cursor.getString(Math.abs(cursor.getColumnIndex("description"))));
+                    datasetModel.setDatasetVersion(cursor.getDouble(Math.abs(cursor.getColumnIndex("version"))));
+                    datasetModel.setRowsCount(cursor.getInt(Math.abs(cursor.getColumnIndex("rows"))));
+                    datasetModel.setColumnsCount(cursor.getInt(Math.abs(cursor.getColumnIndex("columns"))));
+                    return datasetModel;
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return null;
+    }
 }

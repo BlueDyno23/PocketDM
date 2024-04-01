@@ -6,7 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".Activities.BaseActivity"
     android:orientation="vertical">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            app:title="Home"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
     <FrameLayout
         android:id="@+id/fragments_container"
         android:layout_width="match_parent"

@@ -22,7 +22,7 @@ public class HelperSecretDb extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        SQLUtils sqlUtils = new SQLUtils(getWritableDatabase());
+        SQLUtils sqlUtils = new SQLUtils(db);
         sqlUtils.createTable(HTBL_NAME, new String[]{TBL_NAME, TBL_NICKNAME, TBL_DESCRIPTION, TBL_VERSION, TBL_COLUMNS, TBL_ROWS});
     }
 
