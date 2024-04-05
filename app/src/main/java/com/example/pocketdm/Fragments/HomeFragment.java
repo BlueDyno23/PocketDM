@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.example.pocketdm.Activities.BaseActivity;
 import com.example.pocketdm.Adapters.DatasetItemsAdapter;
@@ -29,6 +30,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Data
     private RecyclerView datasetItemsRecyclerView;
     private DatasetItemsAdapter datasetItemsAdapter;
     private List<DatasetModel> datasetModelList;
+    private ImageButton imgBtn;;
     private SQLiteDatabase database;
     private SQLUtils sqlUtils;
     public HomeFragment() {
@@ -58,7 +60,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Data
         datasetItemsRecyclerView = view.findViewById(R.id.dataset_items_recyclerView);
 
         getDatasetModelsList();
-        datasetItemsAdapter = new DatasetItemsAdapter(datasetModelList);
+        datasetItemsAdapter = new DatasetItemsAdapter(datasetModelList, this);
         datasetItemsRecyclerView.setAdapter(datasetItemsAdapter);
 
     }
