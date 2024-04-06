@@ -8,6 +8,7 @@
     android:padding="16dp">
 
     <ImageButton
+        android:layout_marginTop="-12dp"
         android:id="@+id/refresh_list_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,9 +16,10 @@
         android:src="@drawable/baseline_refresh_24"
         app:tint="@color/black_semi_transparent"
         android:backgroundTint="@color/transparent"
-        android:contentDescription="Manually refresh the list" />
+        android:contentDescription="@string/manually_refresh_the_list" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="16dp"
         android:id="@+id/dataset_items_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

@@ -12,4 +12,5 @@
     <string name="dataset_item_edit">Edit</string>
     <string name="dataset_item_delete">Delete</string>
     <string name="dataset_item_content_description">Image describing dataset</string>
+    <string name="manually_refresh_the_list">Manually refresh the list</string>
 </resources>

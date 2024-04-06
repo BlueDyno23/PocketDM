@@ -30,7 +30,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Data
     private RecyclerView datasetItemsRecyclerView;
     private DatasetItemsAdapter datasetItemsAdapter;
     private List<DatasetModel> datasetModelList;
-    private ImageButton imgBtn;;
+    private ImageButton refreshBtn;
     private SQLiteDatabase database;
     private SQLUtils sqlUtils;
     public HomeFragment() {
@@ -57,6 +57,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Data
     private void initiateViews(View view) {
         fabAddDataset = view.findViewById(R.id.fab_add_dataset);
         fabAddDataset.setOnClickListener(this);
+        refreshBtn = view.findViewById(R.id.refresh_list_button);
+        refreshBtn.setOnClickListener(this);
         datasetItemsRecyclerView = view.findViewById(R.id.dataset_items_recyclerView);
 
         getDatasetModelsList();
@@ -70,6 +72,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Data
         if(v.getId() == R.id.fab_add_dataset) {
             AddDatasetDialogFragment addDatasetDialogFragment = AddDatasetDialogFragment.newInstance();
             addDatasetDialogFragment.show(getChildFragmentManager(), "AddDatasetDialogFragment");
+        }
+        else if(v.getId() == R.id.refresh_list_button) {
+            getDatasetModelsList();
+            datasetItemsAdapter.notifyDataSetChanged();
         }
     }
 
