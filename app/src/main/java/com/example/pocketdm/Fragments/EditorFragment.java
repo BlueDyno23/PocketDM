@@ -9,12 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.pocketdm.R;
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link EditorFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class EditorFragment extends Fragment {
     public EditorFragment() {
         // Required empty public constructor
@@ -31,9 +25,14 @@ public class EditorFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_editor, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_editor, container, false);
+        initiateViews(view);
+
+        return view;
+    }
+
+    private void initiateViews(View view){
+
     }
 }
