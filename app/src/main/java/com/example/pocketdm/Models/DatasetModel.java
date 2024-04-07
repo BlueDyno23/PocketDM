@@ -1,5 +1,11 @@
 package com.example.pocketdm.Models;
 
+import android.content.Context;
+import android.database.Cursor;
+
+import com.example.pocketdm.Utilities.HelperDb;
+import com.example.pocketdm.Utilities.SQLUtils;
+
 import java.util.Date;
 
 public class DatasetModel {
@@ -72,6 +78,15 @@ public class DatasetModel {
 
     public void setColumnsCount(int columnsCount) {
         this.columnsCount = columnsCount;
+    }
+
+    public String[][] getData(Context context) {
+        HelperDb helperDb = new HelperDb(context);
+        SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+
+
+        String[][] data = new String[rowsCount][columnsCount];
+        return data;
     }
     //endregion
 

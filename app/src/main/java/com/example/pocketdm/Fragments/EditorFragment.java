@@ -3,13 +3,22 @@ package com.example.pocketdm.Fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.pocketdm.Activities.BaseActivity;
+import com.example.pocketdm.Adapters.TableAdapter;
+
 import com.example.pocketdm.R;
 public class EditorFragment extends Fragment {
+
+    private RecyclerView gridRecyclerView;
+    private TableAdapter tableAdapter;
+    private String[][] data;
+
     public EditorFragment() {
         // Required empty public constructor
     }
@@ -33,6 +42,16 @@ public class EditorFragment extends Fragment {
     }
 
     private void initiateViews(View view){
+        gridRecyclerView = view.findViewById(R.id.grid_recycler_view);
+        prepareData();
+    }
 
+    private void prepareData(){
+        if(BaseActivity.datasetModel != null)
+        {
+            data = BaseActivity.datasetModel.getData(getContext());
+            tableAdapter = new TableAdapter(getContext(), data);
+            gridRecyclerView.setAdapter(tableAdapter);
+        }
     }
 }

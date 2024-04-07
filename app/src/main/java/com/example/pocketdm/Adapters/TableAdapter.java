@@ -25,7 +25,6 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
     // ViewHolder class to hold the views for each cell in the table
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
-
         public ViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.cell_text_view);
@@ -35,7 +34,7 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.table_data_cell, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.table_data_cell, parent, false);
         return new ViewHolder(view);
     }
 
