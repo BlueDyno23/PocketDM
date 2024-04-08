@@ -3,6 +3,8 @@ package com.example.pocketdm.Fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -52,6 +54,7 @@ public class EditorFragment extends Fragment {
             data = BaseActivity.datasetModel.getData(getContext());
             tableAdapter = new TableAdapter(getContext(), data);
             gridRecyclerView.setAdapter(tableAdapter);
+            gridRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), BaseActivity.datasetModel.getColumnsCount()));
         }
     }
 }

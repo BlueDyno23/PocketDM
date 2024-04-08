@@ -15,14 +15,13 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
 
     private Context mContext;
     private String[][] mDataset;
+    private int maxRowCount; // TODO maxRowCount not being used
 
-    // Constructor to initialize the adapter with context and dataset
     public TableAdapter(Context context, String[][] dataset) {
         mContext = context;
         mDataset = dataset;
     }
 
-    // ViewHolder class to hold the views for each cell in the table
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
         public ViewHolder(View itemView) {
@@ -40,12 +39,10 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Populate each cell with data from the dataset
         int row = position / mDataset[0].length;
         int col = position % mDataset[0].length;
 
-        // Customize row and column headers
-        if (row == 0 || col == 0) {
+        if (row == 0) {
             holder.textView.setBackgroundResource(R.drawable.header_cell_bg);
             holder.textView.setTextColor(mContext.getResources().getColor(android.R.color.system_on_primary_container_light));
             holder.textView.setText(mDataset[row][col]); // Assuming headers are provided in dataset

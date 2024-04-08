@@ -2,6 +2,8 @@ package com.example.pocketdm.Models;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.pocketdm.Utilities.HelperDb;
 import com.example.pocketdm.Utilities.SQLUtils;
@@ -82,12 +84,35 @@ public class DatasetModel {
 
     public String[][] getData(Context context) {
         HelperDb helperDb = new HelperDb(context);
-        SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+        SQLiteDatabase db = helperDb.getReadableDatabase();
 
+        try (Cursor c = db.query(datasetNickname, null, null, null, null, null, null)) {
+            int rowCount = c.getCount();
+            int columnCount = c.getColumnCount();
+            String[][] data = new String[rowCount+1][columnCount];
 
-        String[][] data = new String[rowsCount][columnsCount];
-        return data;
+            for (int i = 0; i < columnCount; i++) {
+                data[0][i] = c.getColumnName(i);
+            }
+
+            if (c.moveToFirst()) {
+                int row = 1;
+                do {
+                    for (int i = 0; i < columnCount; i++) {
+                        data[row][i] = c.getString(i);
+                    }
+                    row++;
+                } while (c.moveToNext());
+            }
+            return data;
+        } catch (Exception e) {
+            Log.d("Error", e.getMessage());
+            return null;
+        } finally {
+
+        }
     }
+
     //endregion
 
     //region Methods

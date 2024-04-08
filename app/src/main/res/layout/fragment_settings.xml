@@ -8,6 +8,6 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="i dont know what to put here"/>
+        android:text="i dont know what to put here.. maybe how many rows to load in editor"/>
 
 </FrameLayout>
