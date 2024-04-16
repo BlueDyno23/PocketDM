@@ -21,7 +21,6 @@ import com.google.android.material.button.MaterialButton;
  * create an instance of this fragment.
  */
 public class SettingsFragment extends Fragment implements View.OnClickListener {
-
     EditText maxRowsEditText;
     MaterialButton settingsApplyBtn;
     public SettingsFragment() {
@@ -52,6 +51,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         settingsApplyBtn.setOnClickListener(this);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
+        maxRowsEditText.setHint(String.valueOf(sharedPreferences.getInt("MAX_ROW_COUNT", 100)));
+    }
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.settingsApplyBtn){

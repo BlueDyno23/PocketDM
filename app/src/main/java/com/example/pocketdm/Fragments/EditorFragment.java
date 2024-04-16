@@ -56,7 +56,7 @@ public class EditorFragment extends Fragment {
         if(BaseActivity.datasetModel != null)
         {
             data = BaseActivity.datasetModel.getData(getContext());
-            tableAdapter = new TableAdapter(getContext(), data, sharedPreferences.getInt("MAX_ROW_COUNT", 100));
+            tableAdapter = new TableAdapter(getContext(), data, sharedPreferences.getInt("MAX_ROW_COUNT", 100)+1);
             gridRecyclerView.setAdapter(tableAdapter);
             gridRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), BaseActivity.datasetModel.getColumnsCount()));
         }
