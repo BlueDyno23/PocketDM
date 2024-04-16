@@ -5,9 +5,30 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.SettingsFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="i dont know what to put here.. maybe how many rows to load in editor"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max Row Count"
+            android:layout_weight="1"
+            android:layout_marginRight="15dp"/>
+        <EditText
+            android:id="@+id/editMaxRowCount"
+            style="@style/ThemeOverlay.Material3.TextInputEditText.FilledBox"
+            android:layout_width="50sp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="100"/>
+    </LinearLayout>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/settingsApplyBtn"
+        android:layout_gravity="center|bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Apply"
+        style="@style/Widget.Material3.Button.ElevatedButton"/>
 </FrameLayout>

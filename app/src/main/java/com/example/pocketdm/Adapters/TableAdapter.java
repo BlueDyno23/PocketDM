@@ -17,9 +17,10 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
     private String[][] mDataset;
     private int maxRowCount; // TODO maxRowCount not being used
 
-    public TableAdapter(Context context, String[][] dataset) {
+    public TableAdapter(Context context, String[][] dataset, int maxRowCount) {
         mContext = context;
         mDataset = dataset;
+        this.maxRowCount = Math.min(maxRowCount, dataset.length);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -55,9 +56,11 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        if (mDataset != null) {
-            return mDataset.length * mDataset[0].length;
-        }
-        return 0;
+        int rowCount = getRowCount();
+        return rowCount * mDataset[0].length;
+    }
+
+    public int getRowCount() {
+        return maxRowCount;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.pocketdm.Fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -20,6 +22,7 @@ public class EditorFragment extends Fragment {
     private RecyclerView gridRecyclerView;
     private TableAdapter tableAdapter;
     private String[][] data;
+    SharedPreferences sharedPreferences;
 
     public EditorFragment() {
         // Required empty public constructor
@@ -33,6 +36,7 @@ public class EditorFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = getContext().getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -52,7 +56,7 @@ public class EditorFragment extends Fragment {
         if(BaseActivity.datasetModel != null)
         {
             data = BaseActivity.datasetModel.getData(getContext());
-            tableAdapter = new TableAdapter(getContext(), data);
+            tableAdapter = new TableAdapter(getContext(), data, sharedPreferences.getInt("MAX_ROW_COUNT", 100));
             gridRecyclerView.setAdapter(tableAdapter);
             gridRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), BaseActivity.datasetModel.getColumnsCount()));
         }
