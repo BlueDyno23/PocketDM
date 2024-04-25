@@ -16,4 +16,10 @@
     <string name="training_percentage">Training Percentage</string>
     <string name="will_be_used_for_inputs">Will be used for inputs</string>
     <string name="trainable_columns">Trainable Columns</string>
+    <string name="slider_string_tip">Slide to set the percentage of data scooped from the dataset for training</string>
+    <string name="classification">Classification</string>
+    <string name="linear_regression">Linear Regression</string>
+    <string name="prediction_result">Prediction Result</string>
+    <string name="column_to_predict">Column To Predict</string>
+    <string name="inputs">Inputs</string>
 </resources>

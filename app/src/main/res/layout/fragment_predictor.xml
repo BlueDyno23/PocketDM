@@ -1,75 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Fragments.PredictorFragment">
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:ignore="UselessParent">
+        android:layout_height="0dp"
+        android:layout_weight="15">
+        <ScrollView
+            android:id="@+id/predictor_top_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="UselessParent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/trainable_columns"
+                    android:textAlignment="center" />
+                <TextView
+                    style="@style/TextAppearance.Material3.LabelSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/will_be_used_for_inputs"
+                    android:textAlignment="center" />
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:ignore="NestedScrolling">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/predictor_columns_check"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </ScrollView>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginVertical="5dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/training_percentage"
+                    android:textAlignment="center" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/predictor_percentage_slider"
+                    style="@style/Widget.MaterialComponents.Slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/slider_string_tip"
+                    android:stepSize="10.0"
+                    android:valueFrom="0.0"
+                    android:valueTo="100.0" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginVertical="5dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/column_to_predict"
+                    android:textAlignment="center" />
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:ignore="NestedScrolling">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/predictor_index_column"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </ScrollView>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginVertical="5dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/inputs"
+                    android:textAlignment="center" />
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:ignore="NestedScrolling">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/predictor_inputs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </ScrollView>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginVertical="5dp" />
+
+
+            </LinearLayout>
+        </ScrollView>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="64dp"
+            android:gravity="center"
             android:orientation="vertical">
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/prediction_result"
                 android:textAlignment="center"
-                android:text="@string/trainable_columns"/>
+                android:textSize="16sp" />
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/predictor_output_text"
+                style="@style/TextAppearance.Material3.TitleLarge"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:text="@string/will_be_used_for_inputs"
-                style="@style/TextAppearance.Material3.LabelSmall"/>
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:ignore="NestedScrolling">
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/predictor_columns_check_recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </ScrollView>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
-                android:layout_marginHorizontal="15dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:text="@string/training_percentage"/>
-            <com.google.android.material.slider.Slider
-                android:id="@+id/predictor_percentage_slider"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:valueFrom="0.0"
-                android:valueTo="100.0"
-                android:stepSize="10.0"
-                style="@style/Widget.MaterialComponents.Slider"/>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
-                android:layout_marginHorizontal="15dp"/>
-
-
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:ignore="NestedScrolling">
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/predictor_inputs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </ScrollView>
+                android:textAlignment="center" />
         </LinearLayout>
-    </ScrollView>
+    </RelativeLayout>
 
-</FrameLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="16dp"
+        android:layout_weight="2">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/predictor_classify_btn"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:text="@string/classification" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/predictor_regression_btn"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="@string/linear_regression" />
+    </RelativeLayout>
+
+</LinearLayout>
