@@ -72,6 +72,37 @@ public class SQLUtils {
         }
         return columnCount;
     }
+    public String[] getColumnNames(String tableName) {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        String[] columnNames = null;
+
+        try {
+            db = database;
+            cursor = db.rawQuery("PRAGMA table_info(" + tableName + ")", null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int columnCount = cursor.getCount();
+                columnNames = new String[columnCount];
+
+                for (int i = 0; i < columnCount; i++) {
+                    columnNames[i] = cursor.getString(Math.abs(cursor.getColumnIndex("name")));
+                    cursor.moveToNext();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            if (db != null && db.isOpen()) {
+                db.close();
+            }
+        }
+
+        return columnNames;
+    }
     public void fillTable(Context context, String tableName, Uri fileAdress){
         String raw = FileUtils.getRawFileContentFromUri(context,fileAdress);
         String[] tableRows = raw.split("\n");

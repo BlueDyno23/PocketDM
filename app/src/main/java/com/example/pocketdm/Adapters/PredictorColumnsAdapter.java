@@ -50,7 +50,7 @@ public class PredictorColumnsAdapter extends RecyclerView.Adapter<PredictorColum
 
     @Override
     public int getItemCount() {
-        return 0;
+        return columns.length;
     }
 
 

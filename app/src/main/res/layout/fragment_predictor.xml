@@ -30,16 +30,10 @@
                     android:layout_height="wrap_content"
                     android:text="@string/will_be_used_for_inputs"
                     android:textAlignment="center" />
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:ignore="NestedScrolling">
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/predictor_columns_check"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </ScrollView>
-
+                        android:layout_height="match_parent" />
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -73,15 +67,10 @@
                     android:text="@string/column_to_predict"
                     android:textAlignment="center" />
 
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:ignore="NestedScrolling">
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/predictor_index_column"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-                </ScrollView>
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
@@ -95,15 +84,10 @@
                     android:text="@string/inputs"
                     android:textAlignment="center" />
 
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:ignore="NestedScrolling">
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/predictor_inputs"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-                </ScrollView>
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
