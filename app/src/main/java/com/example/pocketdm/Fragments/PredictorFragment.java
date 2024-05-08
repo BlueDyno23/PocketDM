@@ -15,6 +15,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.pocketdm.Activities.BaseActivity;
+import com.example.pocketdm.Adapters.InputsAdapter;
 import com.example.pocketdm.Adapters.PredictorColumnsAdapter;
 import com.example.pocketdm.Adapters.RadioGroupAdapter;
 import com.example.pocketdm.R;
@@ -34,6 +35,7 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
 
     PredictorColumnsAdapter columnsAdapter;
     RadioGroupAdapter radioGroupAdapter;
+    InputsAdapter inputsAdapter;
     ArrayList<String> selectedColumns;
     public PredictorFragment() {
     }
@@ -82,6 +84,9 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
             columnsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
             radioGroupAdapter = new RadioGroupAdapter(getContext(), selectedColumns, this);
+            inputsAdapter = new InputsAdapter(getContext(), toStringArray(selectedColumns));
+            inputsRecyclerView.setAdapter(inputsAdapter);
+            inputsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
     }
 
@@ -107,5 +112,14 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
     @Override
     public void onRadioSelected(int position) {
 
+    }
+
+    private String[] toStringArray(ArrayList<String> array){
+        String[] a = new String[array.size()];
+
+        for (int i=0; i<array.size(); i++) {
+            a[0] = array.get(i);
+        }
+        return a;
     }
 }

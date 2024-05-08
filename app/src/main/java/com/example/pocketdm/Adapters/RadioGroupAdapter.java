@@ -19,6 +19,7 @@ public class RadioGroupAdapter extends BaseAdapter
 {
     private ArrayList<String> data;
     private Context context;
+    private int selectedPosition = -1;
     public OnRadioSelectedListener onRadioSelectedListener;
     public RadioGroupAdapter(Context context, ArrayList<String> data, OnRadioSelectedListener onRadioSelectedListener) {
         this.context = context;
@@ -62,8 +63,15 @@ public class RadioGroupAdapter extends BaseAdapter
         }
 
         holder.radioButton.setText(data.get(position));
-        holder.radioButton.setOnClickListener(v -> onRadioSelectedListener.onRadioSelected(position));
+        holder.radioButton.setChecked(position == selectedPosition);
 
+        holder.radioButton.setOnClickListener(v -> {
+            if (selectedPosition != position) {
+                selectedPosition = position;
+                notifyDataSetChanged();
+                onRadioSelectedListener.onRadioSelected(position);
+            }
+        });
         return view;
     }
 
