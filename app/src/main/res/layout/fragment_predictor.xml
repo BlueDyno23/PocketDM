@@ -67,10 +67,10 @@
                     android:text="@string/column_to_predict"
                     android:textAlignment="center" />
 
-                    <androidx.recyclerview.widget.RecyclerView
+                    <RadioGroup
                         android:id="@+id/predictor_index_column"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"/>
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
@@ -98,31 +98,27 @@
 
             </LinearLayout>
         </ScrollView>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="64dp"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/prediction_result"
-                android:textAlignment="center"
-                android:textSize="16sp" />
-            <TextView
-                android:id="@+id/predictor_output_text"
-                style="@style/TextAppearance.Material3.TitleLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAlignment="center" />
-        </LinearLayout>
     </RelativeLayout>
 
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/prediction_result"
+            android:textAlignment="center"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/predictor_output_text"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center" />
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

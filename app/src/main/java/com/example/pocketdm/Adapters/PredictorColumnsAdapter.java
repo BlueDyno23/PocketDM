@@ -13,7 +13,7 @@ import com.example.pocketdm.R;
 
 public class PredictorColumnsAdapter extends RecyclerView.Adapter<PredictorColumnsAdapter.ViewHolder> {
 
-    private String[] columns;
+    public String[] columns;
     private OnColumnCheckedListener onColumnCheckedListener;
     public interface OnColumnCheckedListener {
         void onColumnChecked(int position, boolean isChecked);
