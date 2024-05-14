@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 public class RadioGroupAdapter extends BaseAdapter
 {
+    // MIGHT BE USELESS ??
     private ArrayList<String> data;
     private Context context;
     private int selectedPosition = -1;

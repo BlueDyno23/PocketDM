@@ -84,10 +84,10 @@
                     android:text="@string/inputs"
                     android:textAlignment="center" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/predictor_inputs"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/predictor_inputs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"

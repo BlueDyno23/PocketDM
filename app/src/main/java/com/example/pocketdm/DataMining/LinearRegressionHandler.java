@@ -6,13 +6,6 @@ import android.content.Context;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Instances;
 
-import android.content.Context;
-import weka.classifiers.functions.LinearRegression;
-import weka.core.DenseInstance;
-import weka.core.Instances;
-
-import java.util.ArrayList;
-
 public class LinearRegressionHandler implements DataMiningHandler {
     private LinearRegression linearRegression;
     private Instances trainData;
@@ -23,7 +16,7 @@ public class LinearRegressionHandler implements DataMiningHandler {
     }
 
     @Override
-    public void trainModel(Context context, String tableName, String[] selectedColumns, String targetColumn, int percentage) {
+    public Instances trainModel(Context context, String tableName, String[] selectedColumns, String targetColumn, int percentage) {
         // Convert data from the SQL database to Instances using CursorToInstancesConverter
         Instances data = CursorToInstancesConverter.convertCursorToInstances(context, tableName, selectedColumns, targetColumn, percentage);
 
@@ -37,6 +30,7 @@ public class LinearRegressionHandler implements DataMiningHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return data;
     }
 
     @Override

@@ -11,7 +11,7 @@ public class ClassificationHandler implements DataMiningHandler {
     private Instances trainData;
 
     @Override
-    public void trainModel(Context context, String tableName, String[] selectedColumns, String targetColumn, int percentage) {
+    public Instances trainModel(Context context, String tableName, String[] selectedColumns, String targetColumn, int percentage) {
         // Convert data from SQL to Instances using CursorToInstancesConverter
         Instances data = CursorToInstancesConverter.convertCursorToInstances(context, tableName, selectedColumns, targetColumn, percentage);
 
@@ -23,6 +23,8 @@ public class ClassificationHandler implements DataMiningHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return data;
     }
 
     @Override

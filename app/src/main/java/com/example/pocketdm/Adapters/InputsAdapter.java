@@ -16,10 +16,11 @@ import java.util.ArrayList;
 
 public class InputsAdapter extends RecyclerView.Adapter<InputsAdapter.ViewHolder> {
 
-    private String[] data;
+    private ArrayList<String> data;
     private Context context;
+    private RecyclerView.ViewHolder holder;
 
-    public InputsAdapter(Context context, String[] data){
+    public InputsAdapter(Context context, ArrayList<String> data){
         this.data = data;
         this.context = context;
     }
@@ -32,12 +33,27 @@ public class InputsAdapter extends RecyclerView.Adapter<InputsAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull InputsAdapter.ViewHolder holder, int position) {
-        holder.textInputLayout.setHint(data[position]);
+        holder.textInputLayout.setHint(data.get(position));
+        holder.textInputLayout.setTag(position);
+        this.holder = holder;
     }
 
     @Override
     public int getItemCount() {
-        return data.length;
+        return data.size();
+    }
+
+    public String getItem(int position) {
+        return data.get(position);
+    }
+
+    public String getInputValue(int position) {
+        View itemView = holder.itemView;
+        TextInputLayout textInputLayout = itemView.findViewById(R.id.predictor_input_field);
+        if (textInputLayout != null) {
+            return textInputLayout.getEditText().getText().toString();
+        }
+        return null;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

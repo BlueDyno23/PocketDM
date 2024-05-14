@@ -11,8 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pocketdm.Activities.BaseActivity;
 import com.example.pocketdm.Adapters.InputsAdapter;
@@ -25,7 +28,7 @@ import com.google.android.material.slider.Slider;
 
 import java.util.ArrayList;
 
-public class PredictorFragment extends Fragment implements PredictorColumnsAdapter.OnColumnCheckedListener, RadioGroupAdapter.OnRadioSelectedListener {
+public class PredictorFragment extends Fragment implements PredictorColumnsAdapter.OnColumnCheckedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
     RecyclerView columnsRecyclerView, inputsRecyclerView;
     RadioGroup indexColumnRadioGroup;
@@ -34,9 +37,10 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
     Button predictorClassifyBtn, predictorRegressionBtn;
 
     PredictorColumnsAdapter columnsAdapter;
-    RadioGroupAdapter radioGroupAdapter;
     InputsAdapter inputsAdapter;
     ArrayList<String> selectedColumns;
+
+    private String predictedColumn;
     public PredictorFragment() {
     }
 
@@ -60,11 +64,12 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
     }
 
     private void initiateViews(View view) {
-        selectedColumns = new ArrayList<String>();
+        selectedColumns = new ArrayList<>();
 
         columnsRecyclerView = view.findViewById(R.id.predictor_columns_check);
         inputsRecyclerView = view.findViewById(R.id.predictor_inputs);
         indexColumnRadioGroup = view.findViewById(R.id.predictor_index_column);
+        indexColumnRadioGroup.setOnCheckedChangeListener(this);
         trainPercentageSlider = view.findViewById(R.id.predictor_percentage_slider);
         outputLabel = view.findViewById(R.id.predictor_output_text);
         predictorClassifyBtn = view.findViewById(R.id.predictor_classify_btn);
@@ -78,13 +83,12 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
             HelperDb helperDb = new HelperDb(getContext());
             SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
             String[] columns = sqlUtils.getColumnNames(BaseActivity.datasetModel.getDatasetNickname());
-            
+
             columnsAdapter = new PredictorColumnsAdapter(columns, this);
             columnsRecyclerView.setAdapter(columnsAdapter);
             columnsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            radioGroupAdapter = new RadioGroupAdapter(getContext(), selectedColumns, this);
-            inputsAdapter = new InputsAdapter(getContext(), toStringArray(selectedColumns));
+            inputsAdapter = new InputsAdapter(getContext(), getSelectedColumnsNoPredicted());
             inputsRecyclerView.setAdapter(inputsAdapter);
             inputsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
@@ -98,28 +102,76 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
         else{
             selectedColumns.remove(columnsAdapter.columns[position]);
         }
+        inputsAdapter.notifyDataSetChanged();
         updateRadioGroup();
     }
 
-    private void updateRadioGroup(){ // if doesnt work, pass data as parameter?
+    private void updateRadioGroup(){
         indexColumnRadioGroup.removeAllViews();
-        for (int i = 0; i < radioGroupAdapter.getCount(); i++) {
-            View view = radioGroupAdapter.getView(i, null, indexColumnRadioGroup);
-            indexColumnRadioGroup.addView(view);
+        for (int i = 0; i < selectedColumns.size(); i++) {
+            RadioButton radioButton = new RadioButton(getContext());
+            radioButton.setText(selectedColumns.get(i));
+            indexColumnRadioGroup.addView(radioButton);
         }
+    }
+
+    private ArrayList<String> getSelectedColumnsNoPredicted(){
+        if(predictedColumn == null) return selectedColumns;
+
+        ArrayList<String> selectedColumnsNoPredicted = new ArrayList<>();
+        for (int i = 0; i < selectedColumns.size(); i++) {
+            if(!selectedColumns.get(i).equals(predictedColumn)){
+                selectedColumnsNoPredicted.add(selectedColumns.get(i));
+            }
+        }
+        return selectedColumnsNoPredicted;
+    }
+
+    // for the radio group
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        RadioButton button = (RadioButton)group.findViewById(checkedId);
+        String column = button.getText().toString();
+
+        predictedColumn = column;
+
+        inputsAdapter = new InputsAdapter(getContext(), getSelectedColumnsNoPredicted());
+        inputsRecyclerView.setAdapter(inputsAdapter);
+
+    }
+
+    private boolean allInputsFilled(){
+        for (int i = 0; i < inputsAdapter.getItemCount(); i++) {
+            if(inputsAdapter.getInputValue(i) == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private String[] getInputs(){
+        String[] inputs = new String[inputsAdapter.getItemCount()];
+        for (int i = 0; i < inputsAdapter.getItemCount(); i++) {
+            inputs[i] = inputsAdapter.getItem(i);
+        }
+        return inputs;
     }
 
     @Override
-    public void onRadioSelected(int position) {
-
-    }
-
-    private String[] toStringArray(ArrayList<String> array){
-        String[] a = new String[array.size()];
-
-        for (int i=0; i<array.size(); i++) {
-            a[0] = array.get(i);
+    public void onClick(View v) {
+        if(v.getId()==getView().findViewById(R.id.predictor_classify_btn).getId()) {
+            if (allInputsFilled()) {
+                String[] inputs = getInputs();
+            } else {
+                Toast.makeText(getContext(), "Please fill all inputs", Toast.LENGTH_SHORT).show();
+            }
         }
-        return a;
+        else if(v.getId()==getView().findViewById(R.id.predictor_regression_btn).getId()) {
+            if (allInputsFilled()) {
+                String[] inputs = getInputs();
+            } else {
+                Toast.makeText(getContext(), "Please fill all inputs", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
