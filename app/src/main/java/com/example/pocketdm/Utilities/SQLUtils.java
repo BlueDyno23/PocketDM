@@ -9,6 +9,7 @@ import android.net.Uri;
 import com.example.pocketdm.Models.DatasetModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SQLUtils {
@@ -187,4 +188,91 @@ public class SQLUtils {
         }
         return null;
     }
+
+    public void createTemporaryTableFromExistingWithData(String existingTableName, String newTableName) {
+        // Get column names of the existing table
+        String[] existingColumnNames = getColumnNames(existingTableName);
+
+        // Create the temporary table using the same column names
+        createTemporaryTable(newTableName, existingColumnNames);
+
+        // Copy data from the existing table to the temporary table
+        Cursor cursor = queryData(existingTableName, null, null, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                ContentValues cv = new ContentValues();
+                for (String columnName : existingColumnNames) {
+                    cv.put(columnName, cursor.getString(Math.abs(cursor.getColumnIndex(columnName))));
+                }
+                insertData(newTableName, cv);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+    }
+
+    public void createTemporaryTable(String tableName, String[] columns) {
+        StringBuilder createTableQuery = new StringBuilder();
+        createTableQuery.append("CREATE TEMPORARY TABLE IF NOT EXISTS ")
+                .append(tableName)
+                .append(" (");
+
+        for (int i = 0; i < columns.length; i++) {
+            createTableQuery.append(columns[i]);
+            if (i < columns.length - 1) {
+                createTableQuery.append(", ");
+            }
+        }
+
+        createTableQuery.append(");");
+        database.execSQL(createTableQuery.toString());
+    }
+
+    public void replaceTableWithTemporary(String originalTableName, String temporaryTableName) {
+        // Rename the original table to a temporary name
+        String tempTableName = originalTableName + "_temp";
+        database.execSQL("ALTER TABLE " + originalTableName + " RENAME TO " + tempTableName);
+
+        // Rename the temporary table to match the original table's name
+        database.execSQL("ALTER TABLE " + temporaryTableName + " RENAME TO " + originalTableName);
+
+        // Drop the renamed original table
+        database.execSQL("DROP TABLE IF EXISTS " + tempTableName);
+    }
+
+    public void dropColumn(String tableName, String columnName) {
+        // Step 1: Get the current column names of the table
+        String[] existingColumns = getColumnNames(tableName);
+
+        // Step 2: Create a new table without the column to be dropped
+        String newTableName = "temp_" + tableName;
+        createTemporaryTable(newTableName, excludeColumn(existingColumns, columnName));
+
+        // Step 3: Copy data from the original table to the temporary table
+        Cursor cursor = queryData(tableName, existingColumns, null, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                ContentValues cv = new ContentValues();
+                for (String column : existingColumns) {
+                    if (!column.equals(columnName)) {
+                        cv.put(column, cursor.getString(Math.abs(cursor.getColumnIndex(column))));
+                    }
+                }
+                insertData(newTableName, cv);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        // Step 4: Drop the original table
+        dropTable(tableName);
+
+        // Step 5: Rename the temporary table to match the original table's name
+        database.execSQL("ALTER TABLE " + newTableName + " RENAME TO " + tableName);
+    }
+
+    private String[] excludeColumn(String[] columns, String columnName) {
+        List<String> list = new ArrayList<>(Arrays.asList(columns));
+        list.remove(columnName);
+        return list.toArray(new String[0]);
+    }
+
 }

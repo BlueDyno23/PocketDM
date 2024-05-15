@@ -21,6 +21,7 @@ import com.example.pocketdm.Activities.BaseActivity;
 import com.example.pocketdm.Adapters.InputsAdapter;
 import com.example.pocketdm.Adapters.PredictorColumnsAdapter;
 import com.example.pocketdm.Adapters.RadioGroupAdapter;
+import com.example.pocketdm.MachineLearning.KNearestNeighbor;
 import com.example.pocketdm.R;
 import com.example.pocketdm.Utilities.HelperDb;
 import com.example.pocketdm.Utilities.SQLUtils;
@@ -73,7 +74,9 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
         trainPercentageSlider = view.findViewById(R.id.predictor_percentage_slider);
         outputLabel = view.findViewById(R.id.predictor_output_text);
         predictorClassifyBtn = view.findViewById(R.id.predictor_classify_btn);
+        predictorClassifyBtn.setOnClickListener(this);
         predictorRegressionBtn = view.findViewById(R.id.predictor_regression_btn);
+        predictorRegressionBtn.setOnClickListener(this);
 
         prepareData();
     }
@@ -142,7 +145,7 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
 
     private boolean allInputsFilled(){
         for (int i = 0; i < inputsAdapter.getItemCount(); i++) {
-            if(inputsAdapter.getInputValue(i) == null) {
+            if(inputsAdapter.getInputValue(i) == null || inputsAdapter.getInputValue(i).isEmpty()){
                 return false;
             }
         }
@@ -152,7 +155,7 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
     private String[] getInputs(){
         String[] inputs = new String[inputsAdapter.getItemCount()];
         for (int i = 0; i < inputsAdapter.getItemCount(); i++) {
-            inputs[i] = inputsAdapter.getItem(i);
+            inputs[i] = inputsAdapter.getInputValue(i);
         }
         return inputs;
     }
@@ -162,6 +165,15 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
         if(v.getId()==getView().findViewById(R.id.predictor_classify_btn).getId()) {
             if (allInputsFilled()) {
                 String[] inputs = getInputs();
+                double[] array = convertStringArrayToDoubleArray(inputs);
+
+                HelperDb helperDb = new HelperDb(getContext());
+                SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+
+                KNearestNeighbor knn = new KNearestNeighbor(3, helperDb, BaseActivity.datasetModel.getDatasetNickname(), predictedColumn);
+                String result = knn.predict(array, predictedColumn);
+                Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+                outputLabel.setText(result);
             } else {
                 Toast.makeText(getContext(), "Please fill all inputs", Toast.LENGTH_SHORT).show();
             }
@@ -169,9 +181,19 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
         else if(v.getId()==getView().findViewById(R.id.predictor_regression_btn).getId()) {
             if (allInputsFilled()) {
                 String[] inputs = getInputs();
+
             } else {
                 Toast.makeText(getContext(), "Please fill all inputs", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private double[] convertStringArrayToDoubleArray(String[] inputs){
+        double[] array = new double[inputs.length];
+        for (int i = 0; i < inputs.length; i++) {
+            array[i] = Double.parseDouble(inputs[i].replace("\"",""));
+        }
+
+        return array;
     }
 }
