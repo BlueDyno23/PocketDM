@@ -33,6 +33,10 @@ public class BaseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_base);
         initViews();
         initNavigation();
+
+        HelperDb helperDb = new HelperDb(getApplicationContext());
+        SQLUtils sqlUtils = new SQLUtils(helperDb.getWritableDatabase());
+        sqlUtils.discardAllTemps();
     }
 
     private void initViews()

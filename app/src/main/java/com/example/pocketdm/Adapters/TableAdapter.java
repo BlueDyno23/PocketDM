@@ -1,11 +1,10 @@
 package com.example.pocketdm.Adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,12 +14,18 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
 
     private Context mContext;
     private String[][] mDataset;
-    private int maxRowCount; // TODO maxRowCount not being used
+    private int maxRowCount;
+    private OnCellClickedListener onCellClickedListener;
 
-    public TableAdapter(Context context, String[][] dataset, int maxRowCount) {
+    public interface OnCellClickedListener {
+        void onCellClicked(View view, int row, int col);
+    }
+
+    public TableAdapter(Context context, String[][] dataset, int maxRowCount, OnCellClickedListener onCellClickedListener) {
         mContext = context;
         mDataset = dataset;
         this.maxRowCount = Math.min(maxRowCount, dataset.length);
+        this.onCellClickedListener = onCellClickedListener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -40,27 +45,35 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        int row = position / mDataset[0].length;
-        int col = position % mDataset[0].length;
+        int columnsCount = mDataset[0].length;
+        int row = position / columnsCount;
+        int col = position % columnsCount;
 
         if (row == 0) {
             holder.textView.setBackgroundResource(R.drawable.header_cell_bg);
             holder.textView.setTextColor(mContext.getResources().getColor(android.R.color.system_on_primary_container_light));
-            holder.textView.setText(mDataset[row][col]); // Assuming headers are provided in dataset
+            holder.textView.setCompoundDrawableTintList(ColorStateList.valueOf(mContext.getResources().getColor(android.R.color.system_on_primary_container_light)));
         } else {
             holder.textView.setBackgroundResource(R.drawable.data_cell_bg);
             holder.textView.setTextColor(mContext.getResources().getColor(android.R.color.system_primary_light));
-            holder.textView.setText(mDataset[row][col]);
         }
+
+        holder.textView.setText(mDataset[row][col]);
+        holder.textView.setOnClickListener(v -> onCellClickedListener.onCellClicked(v, row, col));
     }
 
     @Override
     public int getItemCount() {
-        int rowCount = getRowCount();
-        return rowCount * mDataset[0].length;
+        if (mDataset == null || mDataset.length == 0 || mDataset[0].length == 0) {
+            return 0;
+        }
+        int columnsCount = mDataset[0].length;
+        return maxRowCount * columnsCount;
     }
 
-    public int getRowCount() {
-        return maxRowCount;
+    public void setData(String[][] data) {
+        mDataset = data;
+        this.maxRowCount = Math.min(maxRowCount, data.length);
+        notifyDataSetChanged();
     }
 }

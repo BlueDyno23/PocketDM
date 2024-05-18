@@ -1,5 +1,6 @@
 package com.example.pocketdm.Adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,29 +10,36 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.pocketdm.Activities.BaseActivity;
+import com.example.pocketdm.Enums.ColumnType;
 import com.example.pocketdm.R;
+import com.example.pocketdm.Utilities.HelperDb;
+import com.example.pocketdm.Utilities.SQLUtils;
 
 public class PredictorColumnsAdapter extends RecyclerView.Adapter<PredictorColumnsAdapter.ViewHolder> {
 
     public String[] columns;
+    private Context context;
     private OnColumnCheckedListener onColumnCheckedListener;
     public interface OnColumnCheckedListener {
         void onColumnChecked(int position, boolean isChecked);
     }
 
-    public PredictorColumnsAdapter(String[] columns, OnColumnCheckedListener onColumnCheckedListener) {
+    public PredictorColumnsAdapter(Context context, String[] columns, OnColumnCheckedListener onColumnCheckedListener) {
         this.columns = columns;
         this.onColumnCheckedListener = onColumnCheckedListener;
+        this.context = context;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView columnLabel;
+        public TextView columnLabel, columnType;
         public CheckBox columnCheckbox;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             columnLabel = itemView.findViewById(R.id.predictorColumnName);
+            columnType = itemView.findViewById(R.id.predictorColumnType);
             columnCheckbox = itemView.findViewById(R.id.predictorColumnCheckbox);
             columnCheckbox.setOnCheckedChangeListener((v, isChecked) -> onColumnCheckedListener.onColumnChecked(getAdapterPosition(), isChecked));
         }
@@ -46,6 +54,7 @@ public class PredictorColumnsAdapter extends RecyclerView.Adapter<PredictorColum
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.columnLabel.setText(columns[position]);
+        holder.columnType.setText(new SQLUtils(new HelperDb(context).getReadableDatabase()).getColumnType(BaseActivity.datasetModel.getDatasetNickname(), columns[position]).toString());
     }
 
     @Override

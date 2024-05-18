@@ -3,14 +3,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragments.EditorFragment"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingHorizontal="16dp">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="10">
-
+        android:layout_weight="10"
+        android:orientation="horizontal"
+        android:gravity="end">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editor_discard_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Discard"
+            style="@style/Widget.Material3.Button.TextButton"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editor_save_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            style="@style/Widget.Material3.Button.TextButton"/>
+        <ImageButton
+            android:id="@+id/refresh_grid_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/transparent"
+            android:contentDescription="@string/manually_refresh_the_grid"
+            android:src="@drawable/baseline_refresh_24"
+            app:tint="@color/black_semi_transparent" />
     </LinearLayout>
 
     <HorizontalScrollView

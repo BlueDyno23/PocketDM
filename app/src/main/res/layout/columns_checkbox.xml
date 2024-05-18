@@ -10,5 +10,12 @@
     <TextView
         android:id="@+id/predictorColumnName"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/predictorColumnType"
+        style="@style/TextAppearance.Material3.LabelSmall"
+        android:textColor="#800000"
+        android:layout_marginStart="8dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 </LinearLayout>

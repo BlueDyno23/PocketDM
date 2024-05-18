@@ -11,7 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.pocketdm.Activities.BaseActivity;
+import com.example.pocketdm.Enums.ColumnType;
 import com.example.pocketdm.R;
+import com.example.pocketdm.Utilities.HelperDb;
+import com.example.pocketdm.Utilities.SQLUtils;
 
 import java.util.ArrayList;
 
@@ -64,6 +68,16 @@ public class RadioGroupAdapter extends BaseAdapter
         }
 
         holder.radioButton.setText(data.get(position));
+        SQLUtils sqlUtils = new SQLUtils(new HelperDb(context).getReadableDatabase());
+
+        ColumnType columnType = sqlUtils.getColumnType(BaseActivity.datasetModel.getDatasetNickname(), data.get(position));
+        if(columnType == ColumnType.CATEGORICAL || columnType == ColumnType.BINARY || columnType == ColumnType.BINARY_TEXT) {
+            holder.radioButton.setActivated(true);
+        }
+        else{
+            holder.radioButton.setActivated(false);
+        }
+
         holder.radioButton.setChecked(position == selectedPosition);
 
         holder.radioButton.setOnClickListener(v -> {

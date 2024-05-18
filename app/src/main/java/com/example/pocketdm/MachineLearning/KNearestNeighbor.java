@@ -24,16 +24,20 @@ public class KNearestNeighbor {
     private final String tempName = "temp_knn";
     public KNearestNeighbor( int k, HelperDb helperDb, String tableName, String labelColumn) {
         this.K = k;
-        this.database = database;
         this.tableName = tableName;
         this.labelColumn = labelColumn;
         this.helperDb = helperDb;
         this.database = helperDb.getReadableDatabase();
+
+        if (!database.isOpen()) {
+            this.database = helperDb.getReadableDatabase(); // Ensure the database is open
+        }
     }
 
     public String predict(double[] inputs, String labelColumn) {
         SQLUtils sqlUtils = new SQLUtils(database);
-        sqlUtils.createTemporaryTableFromExistingWithData(tableName, tempName);
+        sqlUtils.dropTable(tempName);
+        sqlUtils.duplicateTable(tableName, tempName);
         sqlUtils.dropColumn(tempName, labelColumn);
 
         double[] distances = new double[sqlUtils.getRowCount(tempName)];
@@ -69,6 +73,8 @@ public class KNearestNeighbor {
                 maxValue = entry.getValue();
             }
         }
+
+        sqlUtils.dropTable(tempName);
 
         return maxKey;
     }

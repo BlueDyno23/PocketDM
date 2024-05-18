@@ -22,4 +22,9 @@
     <string name="prediction_result">Prediction Result</string>
     <string name="column_to_predict">Column To Predict</string>
     <string name="inputs">Inputs</string>
+    <string name="action_delete">Delete Row</string>
+    <string name="action_delete_column">Delete Column</string>
+    <string name="filter">Filter Menu</string>
+    <string name="ohe">One Hot Encoding</string>
+    <string name="manually_refresh_the_grid">Manually refresh the grid</string>
 </resources>

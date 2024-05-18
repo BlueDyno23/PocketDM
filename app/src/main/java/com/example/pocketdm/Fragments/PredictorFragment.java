@@ -21,6 +21,7 @@ import com.example.pocketdm.Activities.BaseActivity;
 import com.example.pocketdm.Adapters.InputsAdapter;
 import com.example.pocketdm.Adapters.PredictorColumnsAdapter;
 import com.example.pocketdm.Adapters.RadioGroupAdapter;
+import com.example.pocketdm.Enums.ColumnType;
 import com.example.pocketdm.MachineLearning.KNearestNeighbor;
 import com.example.pocketdm.R;
 import com.example.pocketdm.Utilities.HelperDb;
@@ -40,7 +41,7 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
     PredictorColumnsAdapter columnsAdapter;
     InputsAdapter inputsAdapter;
     ArrayList<String> selectedColumns;
-
+    HelperDb helperDb;
     private String predictedColumn;
     public PredictorFragment() {
     }
@@ -65,6 +66,8 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
     }
 
     private void initiateViews(View view) {
+        helperDb = new HelperDb(getContext());
+
         selectedColumns = new ArrayList<>();
 
         columnsRecyclerView = view.findViewById(R.id.predictor_columns_check);
@@ -75,19 +78,18 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
         outputLabel = view.findViewById(R.id.predictor_output_text);
         predictorClassifyBtn = view.findViewById(R.id.predictor_classify_btn);
         predictorClassifyBtn.setOnClickListener(this);
-        predictorRegressionBtn = view.findViewById(R.id.predictor_regression_btn);
-        predictorRegressionBtn.setOnClickListener(this);
+        //predictorRegressionBtn = view.findViewById(R.id.predictor_regression_btn);
+        //predictorRegressionBtn.setOnClickListener(this);
 
         prepareData();
     }
 
     private void prepareData() {
         if(BaseActivity.datasetModel != null) {
-            HelperDb helperDb = new HelperDb(getContext());
             SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
             String[] columns = sqlUtils.getColumnNames(BaseActivity.datasetModel.getDatasetNickname());
 
-            columnsAdapter = new PredictorColumnsAdapter(columns, this);
+            columnsAdapter = new PredictorColumnsAdapter(getContext(),columns, this);
             columnsRecyclerView.setAdapter(columnsAdapter);
             columnsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -109,14 +111,21 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
         updateRadioGroup();
     }
 
-    private void updateRadioGroup(){
+    private void updateRadioGroup() {
+        ArrayList<String> columnsToShow = getSelectedColumnsNoPredicted();
+        RadioGroupAdapter adapter = new RadioGroupAdapter(getContext(), columnsToShow, position -> {
+            predictedColumn = columnsToShow.get(position);
+            inputsAdapter = new InputsAdapter(getContext(), getSelectedColumnsNoPredicted());
+            inputsRecyclerView.setAdapter(inputsAdapter);
+        });
         indexColumnRadioGroup.removeAllViews();
-        for (int i = 0; i < selectedColumns.size(); i++) {
+        for (int i = 0; i < columnsToShow.size(); i++) {
             RadioButton radioButton = new RadioButton(getContext());
-            radioButton.setText(selectedColumns.get(i));
+            radioButton.setText(columnsToShow.get(i));
             indexColumnRadioGroup.addView(radioButton);
         }
     }
+
 
     private ArrayList<String> getSelectedColumnsNoPredicted(){
         if(predictedColumn == null) return selectedColumns;
@@ -167,25 +176,37 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
                 String[] inputs = getInputs();
                 double[] array = convertStringArrayToDoubleArray(inputs);
 
-                HelperDb helperDb = new HelperDb(getContext());
-                SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+                SQLUtils sqlUtils = new SQLUtils(helperDb.getWritableDatabase());
+                ColumnType columnType = sqlUtils.getColumnType(BaseActivity.datasetModel.getDatasetNickname(), predictedColumn);
+                if(columnType != ColumnType.CATEGORICAL || columnType != ColumnType.BINARY || columnType != ColumnType.BINARY_TEXT) {
+                    Toast.makeText(getContext(), "Please select a categorical (or binary) column", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                sqlUtils.duplicateTable(BaseActivity.datasetModel.getDatasetNickname(), BaseActivity.datasetModel.getDatasetNickname()+"_predict_tmp");
+                for(String column : sqlUtils.getColumnNames(BaseActivity.datasetModel.getDatasetNickname())){
+                    if(!selectedColumns.contains(column)){
+                        sqlUtils.dropColumn(BaseActivity.datasetModel.getDatasetNickname()+"_predict_tmp", column);
+                    }
+                }
 
-                KNearestNeighbor knn = new KNearestNeighbor(3, helperDb, BaseActivity.datasetModel.getDatasetNickname(), predictedColumn);
+                KNearestNeighbor knn = new KNearestNeighbor(3, helperDb, BaseActivity.datasetModel.getDatasetNickname()+"_predict_tmp", predictedColumn);
                 String result = knn.predict(array, predictedColumn);
+
+                sqlUtils.dropTable(BaseActivity.datasetModel.getDatasetNickname()+"_predict_tmp");
                 Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
                 outputLabel.setText(result);
             } else {
                 Toast.makeText(getContext(), "Please fill all inputs", Toast.LENGTH_SHORT).show();
             }
         }
-        else if(v.getId()==getView().findViewById(R.id.predictor_regression_btn).getId()) {
+        /*else if(v.getId()==getView().findViewById(R.id.predictor_regression_btn).getId()) {
             if (allInputsFilled()) {
                 String[] inputs = getInputs();
 
             } else {
                 Toast.makeText(getContext(), "Please fill all inputs", Toast.LENGTH_SHORT).show();
             }
-        }
+        }*/
     }
 
     private double[] convertStringArrayToDoubleArray(String[] inputs){

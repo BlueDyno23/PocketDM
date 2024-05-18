@@ -12,11 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.pocketdm.Activities.BaseActivity;
 import com.example.pocketdm.Adapters.DatasetItemsAdapter;
 import com.example.pocketdm.Models.DatasetModel;
 import com.example.pocketdm.R;
+import com.example.pocketdm.Utilities.HelperDb;
 import com.example.pocketdm.Utilities.HelperSecretDb;
 import com.example.pocketdm.Utilities.SQLUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -109,7 +111,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Data
 
         sqlUtils.deleteData(HelperSecretDb.HTBL_NAME, "name = ?", new String[]{datasetModelList.get(position).getDatasetName()});
 
-        sqlUtils = new SQLUtils(hsb.getWritableDatabase());
+        sqlUtils = new SQLUtils(new HelperDb(getContext()).getWritableDatabase());
         sqlUtils.dropTable(datasetModelList.get(position).getDatasetNickname());
     }
 }

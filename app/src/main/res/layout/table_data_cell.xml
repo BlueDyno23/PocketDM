@@ -3,10 +3,12 @@
     android:id="@+id/cell_text_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/data_cell_bg"
+    android:ellipsize="end"
+    android:gravity="center"
     android:padding="8dp"
     android:textAppearance="?android:attr/textAppearanceSmall"
-    android:gravity="center"
     android:textColor="?attr/colorPrimary"
-    android:background="@drawable/data_cell_bg"
-    android:ellipsize="end">
+    android:drawableEnd="@drawable/ic_dropmenu">
 </TextView>
+

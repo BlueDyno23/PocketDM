@@ -129,17 +129,18 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/predictor_classify_btn"
             style="@style/Widget.Material3.Button.ElevatedButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
             android:text="@string/classification" />
-        <com.google.android.material.button.MaterialButton
+        <!--
+                <com.google.android.material.button.MaterialButton
             android:id="@+id/predictor_regression_btn"
             style="@style/Widget.Material3.Button.ElevatedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:text="@string/linear_regression" />
+        -->
     </RelativeLayout>
 
 </LinearLayout>

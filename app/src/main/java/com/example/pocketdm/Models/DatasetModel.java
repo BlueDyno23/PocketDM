@@ -24,7 +24,7 @@ public class DatasetModel {
     public DatasetModel() {
 
     }
-    public DatasetModel(String datasetName, String datasetNickname, String datasetDescription, double datasetVersion, String filePath, int rowsCount, int columnsCount) {
+    public DatasetModel(String datasetName, String datasetNickname, String datasetDescription, double datasetVersion, int rowsCount, int columnsCount) {
         this.datasetName = datasetName;
         this.datasetNickname = datasetNickname;
         this.datasetDescription = datasetDescription;

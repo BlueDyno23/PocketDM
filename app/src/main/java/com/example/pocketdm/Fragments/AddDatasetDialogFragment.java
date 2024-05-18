@@ -96,10 +96,12 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
                 uri -> {
                     if (FileUtils.getFileName(getActivity(), uri) != null && FileUtils.getFileName(getActivity(), uri).toLowerCase().endsWith(".csv")) {
                         sqlUtils = new SQLUtils(helperDb.getWritableDatabase());
-                        sqlUtils.fillTable(getContext(), nicknameInput.getEditText().getText().toString(), uri);
 
-                        rowsInput.getEditText().setText(String.valueOf(sqlUtils.getRowCount(nicknameInput.getEditText().getText().toString())));
-                        columnsInput.getEditText().setText(String.valueOf(sqlUtils.getColumnCount(nicknameInput.getEditText().getText().toString())));
+                        String name = nicknameInput.getEditText().getText().toString().replace(" ", "_");
+                        sqlUtils.fillTable(getContext(), name, uri);
+
+                        rowsInput.getEditText().setText(String.valueOf(sqlUtils.getRowCount(name)));
+                        columnsInput.getEditText().setText(String.valueOf(sqlUtils.getColumnCount(name)));
                         nameInput.getEditText().setText(FileUtils.getFileName(getActivity(), uri).split("\\.")[0]);
 
                     } else {
@@ -113,8 +115,8 @@ public class AddDatasetDialogFragment extends DialogFragment implements View.OnC
         SQLUtils utils = new SQLUtils(hsd.getWritableDatabase());
 
         ContentValues cv = new ContentValues();
-        cv.put(HelperSecretDb.TBL_NAME, nameInput.getEditText().getText().toString());
-        cv.put(HelperSecretDb.TBL_NICKNAME, nicknameInput.getEditText().getText().toString());
+        cv.put(HelperSecretDb.TBL_NAME, nameInput.getEditText().getText().toString().replace(" ", "_"));
+        cv.put(HelperSecretDb.TBL_NICKNAME, nicknameInput.getEditText().getText().toString().replace(" ", "_"));
         cv.put(HelperSecretDb.TBL_DESCRIPTION, descriptionInput.getEditText().getText().toString());
         cv.put(HelperSecretDb.TBL_VERSION, versionInput.getEditText().getText().toString());
         cv.put(HelperSecretDb.TBL_COLUMNS, columnsInput.getEditText().getText().toString());
