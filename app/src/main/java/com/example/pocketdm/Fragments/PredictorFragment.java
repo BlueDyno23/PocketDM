@@ -3,7 +3,6 @@ package com.example.pocketdm.Fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -20,12 +18,12 @@ import android.widget.Toast;
 import com.example.pocketdm.Activities.BaseActivity;
 import com.example.pocketdm.Adapters.InputsAdapter;
 import com.example.pocketdm.Adapters.PredictorColumnsAdapter;
-import com.example.pocketdm.Adapters.RadioGroupAdapter;
 import com.example.pocketdm.Enums.ColumnType;
 import com.example.pocketdm.MachineLearning.KNearestNeighbor;
 import com.example.pocketdm.R;
 import com.example.pocketdm.Utilities.HelperDb;
 import com.example.pocketdm.Utilities.SQLUtils;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.slider.Slider;
 
 import java.util.ArrayList;
@@ -43,12 +41,11 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
     ArrayList<String> selectedColumns;
     HelperDb helperDb;
     private String predictedColumn;
-    public PredictorFragment() {
-    }
+
+    public PredictorFragment() {}
 
     public static PredictorFragment newInstance() {
-        PredictorFragment fragment = new PredictorFragment();
-        return fragment;
+        return new PredictorFragment();
     }
 
     @Override
@@ -57,12 +54,20 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_predictor, container, false);
         initiateViews(view);
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+        builder.setTitle("Info");
+        builder.setMessage("The current prediction algorithm using KNN therefore please only work with numerical values as parameters.");
+        builder.setPositiveButton("Ok", null);
+        builder.show();
     }
 
     private void initiateViews(View view) {
@@ -78,18 +83,18 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
         outputLabel = view.findViewById(R.id.predictor_output_text);
         predictorClassifyBtn = view.findViewById(R.id.predictor_classify_btn);
         predictorClassifyBtn.setOnClickListener(this);
-        //predictorRegressionBtn = view.findViewById(R.id.predictor_regression_btn);
-        //predictorRegressionBtn.setOnClickListener(this);
+        // predictorRegressionBtn = view.findViewById(R.id.predictor_regression_btn);
+        // predictorRegressionBtn.setOnClickListener(this);
 
         prepareData();
     }
 
     private void prepareData() {
-        if(BaseActivity.datasetModel != null) {
+        if (BaseActivity.datasetModel != null) {
             SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
             String[] columns = sqlUtils.getColumnNames(BaseActivity.datasetModel.getDatasetNickname());
 
-            columnsAdapter = new PredictorColumnsAdapter(getContext(),columns, this);
+            columnsAdapter = new PredictorColumnsAdapter(getContext(), columns, this);
             columnsRecyclerView.setAdapter(columnsAdapter);
             columnsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -101,10 +106,9 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
 
     @Override
     public void onColumnChecked(int position, boolean isChecked) {
-        if(isChecked){
+        if (isChecked) {
             selectedColumns.add(columnsAdapter.columns[position]);
-        }
-        else{
+        } else {
             selectedColumns.remove(columnsAdapter.columns[position]);
         }
         inputsAdapter.notifyDataSetChanged();
@@ -113,55 +117,66 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
 
     private void updateRadioGroup() {
         ArrayList<String> columnsToShow = getSelectedColumnsNoPredicted();
-        RadioGroupAdapter adapter = new RadioGroupAdapter(getContext(), columnsToShow, position -> {
-            predictedColumn = columnsToShow.get(position);
-            inputsAdapter = new InputsAdapter(getContext(), getSelectedColumnsNoPredicted());
-            inputsRecyclerView.setAdapter(inputsAdapter);
-        });
         indexColumnRadioGroup.removeAllViews();
+
+        SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+
         for (int i = 0; i < columnsToShow.size(); i++) {
+            String column = columnsToShow.get(i);
+            ColumnType columnType = sqlUtils.getColumnType(BaseActivity.datasetModel.getDatasetNickname(), column);
+
+            if (!(columnType == ColumnType.CATEGORICAL || columnType == ColumnType.BINARY || columnType == ColumnType.BINARY_TEXT)) {
+                continue;
+            }
+
             RadioButton radioButton = new RadioButton(getContext());
-            radioButton.setText(columnsToShow.get(i));
+            radioButton.setText(column);
+            radioButton.setId(i);
+            final String columnFinal = column;
+            if (column.equals(predictedColumn)) {
+                radioButton.setChecked(true);
+            }
+            radioButton.setOnClickListener(v -> {
+                predictedColumn = columnFinal;
+                inputsAdapter = new InputsAdapter(getContext(), getSelectedColumnsNoPredicted());
+                inputsRecyclerView.setAdapter(inputsAdapter);
+            });
             indexColumnRadioGroup.addView(radioButton);
         }
     }
 
 
-    private ArrayList<String> getSelectedColumnsNoPredicted(){
-        if(predictedColumn == null) return selectedColumns;
+
+    private ArrayList<String> getSelectedColumnsNoPredicted() {
+        if (predictedColumn == null) return selectedColumns;
 
         ArrayList<String> selectedColumnsNoPredicted = new ArrayList<>();
-        for (int i = 0; i < selectedColumns.size(); i++) {
-            if(!selectedColumns.get(i).equals(predictedColumn)){
-                selectedColumnsNoPredicted.add(selectedColumns.get(i));
+        for (String column : selectedColumns) {
+            if (!column.equals(predictedColumn)) {
+                selectedColumnsNoPredicted.add(column);
             }
         }
         return selectedColumnsNoPredicted;
     }
 
-    // for the radio group
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        RadioButton button = (RadioButton)group.findViewById(checkedId);
-        String column = button.getText().toString();
-
-        predictedColumn = column;
-
+        RadioButton button = group.findViewById(checkedId);
+        predictedColumn = button.getText().toString();
         inputsAdapter = new InputsAdapter(getContext(), getSelectedColumnsNoPredicted());
         inputsRecyclerView.setAdapter(inputsAdapter);
-
     }
 
-    private boolean allInputsFilled(){
+    private boolean allInputsFilled() {
         for (int i = 0; i < inputsAdapter.getItemCount(); i++) {
-            if(inputsAdapter.getInputValue(i) == null || inputsAdapter.getInputValue(i).isEmpty()){
+            if (inputsAdapter.getInputValue(i) == null || inputsAdapter.getInputValue(i).isEmpty()) {
                 return false;
             }
         }
         return true;
     }
 
-    private String[] getInputs(){
+    private String[] getInputs() {
         String[] inputs = new String[inputsAdapter.getItemCount()];
         for (int i = 0; i < inputsAdapter.getItemCount(); i++) {
             inputs[i] = inputsAdapter.getInputValue(i);
@@ -171,50 +186,41 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
 
     @Override
     public void onClick(View v) {
-        if(v.getId()==getView().findViewById(R.id.predictor_classify_btn).getId()) {
-            if (allInputsFilled()) {
+        if (v.getId() == predictorClassifyBtn.getId()) {
+            if (allInputsFilled() && predictedColumn != null) {
                 String[] inputs = getInputs();
                 double[] array = convertStringArrayToDoubleArray(inputs);
 
                 SQLUtils sqlUtils = new SQLUtils(helperDb.getWritableDatabase());
                 ColumnType columnType = sqlUtils.getColumnType(BaseActivity.datasetModel.getDatasetNickname(), predictedColumn);
-                if(columnType != ColumnType.CATEGORICAL || columnType != ColumnType.BINARY || columnType != ColumnType.BINARY_TEXT) {
+                if (!(columnType == ColumnType.CATEGORICAL || columnType == ColumnType.BINARY || columnType == ColumnType.BINARY_TEXT)) {
                     Toast.makeText(getContext(), "Please select a categorical (or binary) column", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                sqlUtils.duplicateTable(BaseActivity.datasetModel.getDatasetNickname(), BaseActivity.datasetModel.getDatasetNickname()+"_predict_tmp");
-                for(String column : sqlUtils.getColumnNames(BaseActivity.datasetModel.getDatasetNickname())){
-                    if(!selectedColumns.contains(column)){
-                        sqlUtils.dropColumn(BaseActivity.datasetModel.getDatasetNickname()+"_predict_tmp", column);
+                sqlUtils.duplicateTable(BaseActivity.datasetModel.getDatasetNickname(), BaseActivity.datasetModel.getDatasetNickname() + "_predict_tmp");
+                for (String column : sqlUtils.getColumnNames(BaseActivity.datasetModel.getDatasetNickname())) {
+                    if (!selectedColumns.contains(column)) {
+                        sqlUtils.dropColumn(BaseActivity.datasetModel.getDatasetNickname() + "_predict_tmp", column);
                     }
                 }
 
-                KNearestNeighbor knn = new KNearestNeighbor(3, helperDb, BaseActivity.datasetModel.getDatasetNickname()+"_predict_tmp", predictedColumn);
+                KNearestNeighbor knn = new KNearestNeighbor(3, helperDb, BaseActivity.datasetModel.getDatasetNickname() + "_predict_tmp", predictedColumn);
                 String result = knn.predict(array, predictedColumn);
 
-                sqlUtils.dropTable(BaseActivity.datasetModel.getDatasetNickname()+"_predict_tmp");
+                sqlUtils.dropTable(BaseActivity.datasetModel.getDatasetNickname() + "_predict_tmp");
                 Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
                 outputLabel.setText(result);
             } else {
-                Toast.makeText(getContext(), "Please fill all inputs", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please fill all inputs, or select a valid column to predict", Toast.LENGTH_SHORT).show();
             }
         }
-        /*else if(v.getId()==getView().findViewById(R.id.predictor_regression_btn).getId()) {
-            if (allInputsFilled()) {
-                String[] inputs = getInputs();
-
-            } else {
-                Toast.makeText(getContext(), "Please fill all inputs", Toast.LENGTH_SHORT).show();
-            }
-        }*/
     }
 
-    private double[] convertStringArrayToDoubleArray(String[] inputs){
+    private double[] convertStringArrayToDoubleArray(String[] inputs) {
         double[] array = new double[inputs.length];
         for (int i = 0; i < inputs.length; i++) {
-            array[i] = Double.parseDouble(inputs[i].replace("\"",""));
+            array[i] = Double.parseDouble(inputs[i].replace("\"", ""));
         }
-
         return array;
     }
 }

@@ -68,16 +68,6 @@ public class RadioGroupAdapter extends BaseAdapter
         }
 
         holder.radioButton.setText(data.get(position));
-        SQLUtils sqlUtils = new SQLUtils(new HelperDb(context).getReadableDatabase());
-
-        ColumnType columnType = sqlUtils.getColumnType(BaseActivity.datasetModel.getDatasetNickname(), data.get(position));
-        if(columnType == ColumnType.CATEGORICAL || columnType == ColumnType.BINARY || columnType == ColumnType.BINARY_TEXT) {
-            holder.radioButton.setActivated(true);
-        }
-        else{
-            holder.radioButton.setActivated(false);
-        }
-
         holder.radioButton.setChecked(position == selectedPosition);
 
         holder.radioButton.setOnClickListener(v -> {
