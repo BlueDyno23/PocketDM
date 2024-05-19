@@ -1,17 +1,16 @@
 package com.example.pocketdm.Fragments;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 
-import androidx.appcompat.widget.ThemedSpinnerAdapter;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,12 +23,15 @@ import android.widget.Toast;
 import com.example.pocketdm.Activities.BaseActivity;
 import com.example.pocketdm.Adapters.TableAdapter;
 
+import com.example.pocketdm.Enums.ColumnType;
 import com.example.pocketdm.R;
 import com.example.pocketdm.Utilities.HelperDb;
 import com.example.pocketdm.Utilities.HelperSecretDb;
 import com.example.pocketdm.Utilities.SQLUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.util.ArrayList;
 
 public class EditorFragment extends Fragment implements TableAdapter.OnCellClickedListener, View.OnClickListener {
 
@@ -182,11 +184,56 @@ public class EditorFragment extends Fragment implements TableAdapter.OnCellClick
     }
 
     private void filterColumn(int col){
-
+        Toast.makeText(getContext(), "current an excess feature", Toast.LENGTH_SHORT).show();
     }
-    private void oneHotEncodingColumn(int col){
+    private void oneHotEncodingColumn(int col) {
+        SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+        String columnName = sqlUtils.getColumnNames(tempTableName)[col];
 
+        ColumnType columnType = sqlUtils.getColumnType(tempTableName, columnName);
+        if (columnType != ColumnType.NUMERIC && columnType != ColumnType.TEXT) {
+            ArrayList<String> values = new ArrayList<>();
+            Cursor cursor = helperDb.getReadableDatabase().query(tempTableName, new String[]{columnName}, null, null, null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    values.add(cursor.getString(cursor.getColumnIndex(columnName)));
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
+
+            String[] uniqueValues = sqlUtils.findUniqueValues(tempTableName, columnName);
+            for (String v : uniqueValues) {
+                sqlUtils.addColumn(tempTableName, columnName + "_" + v, "INTEGER");
+            }
+
+            helperDb.getWritableDatabase().beginTransaction();
+            try {
+                for (int i = 0; i < values.size(); i++) {
+                    String currentValue = values.get(i);
+                    ContentValues cv = new ContentValues();
+                    for (String u : uniqueValues) {
+                        cv.put(columnName + "_" + u, currentValue.equals(u) ? 1 : 0);
+                    }
+                    helperDb.getWritableDatabase().update(tempTableName, cv, "ROWID = ?", new String[]{String.valueOf(i + 1)});
+                }
+                helperDb.getWritableDatabase().setTransactionSuccessful();
+            } finally {
+                helperDb.getWritableDatabase().endTransaction();
+            }
+
+            sqlUtils.dropColumn(tempTableName, columnName);
+            updateTableGrid();
+        } else {
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+            builder.setTitle("Invalid Column for One Hot Encoding");
+            builder.setMessage("Selected column cannot be one-hot-encoded\n(too many unique values or unsupported type)");
+            builder.setPositiveButton("Ok", null);
+            builder.show();
+        }
     }
+
+
     private void startTableEditing(){
         tempTableName = BaseActivity.datasetModel.getDatasetNickname()+"_edit";
         SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
@@ -204,7 +251,6 @@ public class EditorFragment extends Fragment implements TableAdapter.OnCellClick
         sqlUtils.renameTable(tempTableName, BaseActivity.datasetModel.getDatasetNickname());
 
         startTableEditing();
-        updateTableGrid();
     }
 
     private void discardTable(){

@@ -27,4 +27,11 @@
     <string name="filter">Filter Menu</string>
     <string name="ohe">One Hot Encoding</string>
     <string name="manually_refresh_the_grid">Manually refresh the grid</string>
+    <string name="edit_dataset">Edit Dataset</string>
+    <string name="edit">Edit</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
+    <string name="version">Version</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
 </resources>

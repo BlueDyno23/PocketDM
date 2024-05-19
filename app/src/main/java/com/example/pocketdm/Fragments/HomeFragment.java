@@ -101,7 +101,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Data
 
     @Override
     public void onEditClicked(int position) {
-
+        EditDatasetDialogFragment editDatasetDialogFragment = EditDatasetDialogFragment.newInstance(datasetModelList.get(position));
+        editDatasetDialogFragment.show(getChildFragmentManager(), "EditDatasetDialogFragment");
     }
 
     @Override

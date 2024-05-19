@@ -212,7 +212,7 @@ public class SQLUtils {
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 String s = cursor.getString(Math.abs(cursor.getColumnIndex(columnName)));
-                String[] diffs = findDifferentValues(tableName, columnName);
+                String[] diffs = findUniqueValues(tableName, columnName);
                 int diff = diffs.length;
                 if(tryParseInt(s)!=null || tryParseDouble(s)!=null) {
                     if(diff < 3) {
@@ -252,7 +252,7 @@ public class SQLUtils {
             return null;
         }
     }
-    public String[] findDifferentValues(String tableName, String columnName) {
+    public String[] findUniqueValues(String tableName, String columnName) {
         Cursor cursor = database.query(tableName, null, null, null, null, null, null);
         Map<String, Integer> map = new HashMap<String, Integer>();
         if (cursor != null && cursor.moveToFirst()) {
@@ -364,32 +364,42 @@ public class SQLUtils {
     }
 
     public void dropColumn(String tableName, String columnName) {
-        String[] columns = getColumnNames(tableName);
-        String[] newColumns = excludeColumn(columns, columnName);
+        // Get all columns from the table except the one to be dropped
+        Cursor cursor = database.rawQuery("PRAGMA table_info(" + tableName + ")", null);
+        StringBuilder createTableColumns = new StringBuilder();
+        StringBuilder selectColumns = new StringBuilder();
+        boolean first = true;
 
-        String tempTableName = "temp_" + tableName;
-
-        createTable(tempTableName, newColumns);
-
-        Cursor cursor = database.query(tableName, null, null, null, null, null, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                ContentValues cv = new ContentValues();
-                for (String column : newColumns) {
-                    cv.put(column, cursor.getString(cursor.getColumnIndex(column)));
+        while (cursor.moveToNext()) {
+            String name = cursor.getString(cursor.getColumnIndex("name"));
+            if (!name.equals(columnName)) {
+                if (!first) {
+                    createTableColumns.append(", ");
+                    selectColumns.append(", ");
                 }
-                insertData(tempTableName, cv);
-            } while (cursor.moveToNext());
-            cursor.close();
+                createTableColumns.append(name).append(" ").append(cursor.getString(cursor.getColumnIndex("type")));
+                selectColumns.append(name);
+                first = false;
+            }
         }
+        cursor.close();
+
+        String tempTableName = tableName + "_temp";
+        // Create new table without the column to be dropped
+        String createTableSQL = "CREATE TABLE " + tempTableName + " (" + createTableColumns.toString() + ")";
+        database.execSQL(createTableSQL);
+
+        // Copy data into the new table
+        String copyDataSQL = "INSERT INTO " + tempTableName + " (" + selectColumns.toString() + ") SELECT " + selectColumns.toString() + " FROM " + tableName;
+        database.execSQL(copyDataSQL);
 
         // Drop the old table
-        dropTable(tableName);
+        database.execSQL("DROP TABLE " + tableName);
 
-        // Rename the temp table to the original table name
+        // Rename the new table to the old table's name
         database.execSQL("ALTER TABLE " + tempTableName + " RENAME TO " + tableName);
     }
+
 
     public void renameTable(String tableName, String newTableName) {
         database.execSQL("ALTER TABLE " + tableName + " RENAME TO " + newTableName);
