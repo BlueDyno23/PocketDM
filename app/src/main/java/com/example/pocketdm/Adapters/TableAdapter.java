@@ -10,6 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.pocketdm.R;
 
+import java.util.ArrayList;
+import java.util.Vector;
+
 public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> {
 
     private Context mContext;
@@ -17,8 +20,14 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
     private int maxRowCount;
     private OnCellClickedListener onCellClickedListener;
 
+    private ArrayList<Integer> highlightedRows;
+    private ArrayList<Integer> highlightedColumns;
+    private int highlightedCellRow = -1;
+    private int highlightedCellCol = -1;
+
+
     public interface OnCellClickedListener {
-        void onCellClicked(View view, int row, int col);
+        boolean onCellClicked(View view, int row, int col);
     }
 
     public TableAdapter(Context context, String[][] dataset, int maxRowCount, OnCellClickedListener onCellClickedListener) {
@@ -26,6 +35,9 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
         mDataset = dataset;
         this.maxRowCount = Math.min(maxRowCount, dataset.length);
         this.onCellClickedListener = onCellClickedListener;
+
+        highlightedRows = new ArrayList<>();
+        highlightedColumns = new ArrayList<>();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -53,13 +65,24 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
             holder.textView.setBackgroundResource(R.drawable.header_cell_bg);
             holder.textView.setTextColor(mContext.getResources().getColor(android.R.color.system_on_primary_container_light));
             holder.textView.setCompoundDrawableTintList(ColorStateList.valueOf(mContext.getResources().getColor(android.R.color.system_on_primary_container_light)));
-        } else {
+        }
+        else {
             holder.textView.setBackgroundResource(R.drawable.data_cell_bg);
             holder.textView.setTextColor(mContext.getResources().getColor(android.R.color.system_primary_light));
         }
 
+        if(highlightedRows.contains(row)) {
+            holder.textView.setBackgroundResource(R.drawable.data_cell_bg_highlighted);
+        }
+        if(highlightedColumns.contains(col) && row!=0) {
+            holder.textView.setBackgroundResource(R.drawable.data_column_cell_bg_highlighted);
+        }
+        if((highlightedCellRow != -1 && highlightedCellCol != -1) && highlightedCellRow == row && highlightedCellCol == col) {
+            holder.textView.setBackgroundResource(R.drawable.cell_bg_highlighted);
+        }
+
         holder.textView.setText(mDataset[row][col]);
-        holder.textView.setOnClickListener(v -> onCellClickedListener.onCellClicked(v, row, col));
+        holder.textView.setOnLongClickListener(v -> onCellClickedListener.onCellClicked(v, row, col));
     }
 
     @Override
@@ -74,6 +97,38 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> 
     public void setData(String[][] data) {
         mDataset = data;
         this.maxRowCount = Math.min(maxRowCount, data.length);
+        notifyDataSetChanged();
+    }
+
+    public void addHighlightedRow(int row) {
+        highlightedRows.add(row);
+        notifyDataSetChanged();
+    }
+
+    public void addHighlightedColumn(int col) {
+        highlightedColumns.add(col);
+        notifyDataSetChanged();
+    }
+
+    public void resetHighlightedRows() {
+        highlightedRows.clear();
+        notifyDataSetChanged();
+    }
+
+    public void resetHighlightedColumns() {
+        highlightedColumns.clear();
+        notifyDataSetChanged();
+    }
+
+    public void setHighlightedCell(int row, int col) {
+        highlightedCellRow = row;
+        highlightedCellCol = col;
+        notifyDataSetChanged();
+    }
+
+    public void resetHighlightedCell() {
+        highlightedCellRow = -1;
+        highlightedCellCol = -1;
         notifyDataSetChanged();
     }
 }

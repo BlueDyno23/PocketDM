@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -30,6 +31,7 @@ import com.example.pocketdm.Utilities.HelperSecretDb;
 import com.example.pocketdm.Utilities.SQLUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 
@@ -107,15 +109,20 @@ public class EditorFragment extends Fragment implements TableAdapter.OnCellClick
 
 
     @Override
-    public void onCellClicked(View view, int row, int col) {
+    public boolean onCellClicked(View view, int row, int col) {
+        resetHighlight();
+
         PopupMenu popup = new PopupMenu(getContext(), view);
         MenuInflater inflater = popup.getMenuInflater();
         if(row==0)
         {
             inflater.inflate(R.menu.editor_dropmenu_column, popup.getMenu());
+            highlightColumn(col);
         }
         else {
             inflater.inflate(R.menu.editor_dropmenu_row, popup.getMenu());
+            highlightRow(row);
+            highlightCell(row,col);
         }
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -128,6 +135,9 @@ public class EditorFragment extends Fragment implements TableAdapter.OnCellClick
                     deleteRow(row);
                     return true;
                 }
+                else if(item.getItemId() == R.id.action_edit_value){
+                    editRowValue(col, row);
+                }
                 else if(item.getItemId() == R.id.action_filter){
                     filterColumn(col);
                     return true;
@@ -136,11 +146,96 @@ public class EditorFragment extends Fragment implements TableAdapter.OnCellClick
                     oneHotEncodingColumn(col);
                     return true;
                 }
+                else if(item.getItemId() == R.id.action_edit_column_name){
+                    editColumnName(col);
+                    return true;
+                }
+                else if(item.getItemId() == R.id.action_normalize){
+                    normalizeColumn(col);
+                    return true;
+                }
                 return false;
             }
         });
 
         popup.show();
+
+        return true;
+    }
+
+    private void editRowValue(int col, int row) {
+        SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+
+        View view = getLayoutInflater().inflate(R.layout.edit_column_name_dialog, null);
+        TextInputLayout editText = view.findViewById(R.id.edit_column_name_input);
+        editText.getEditText().setHint(sqlUtils.getColumnNames(tempTableName)[col]);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+        builder.setTitle("Edit value");
+        builder.setView(view);
+        builder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newValue = editText.getEditText().getText().toString();
+                if(newValue.isEmpty()){
+                    Toast.makeText(getContext(), "Value cannot be empty/null", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                newValue = newValue.replace(" ","_");
+                newValue = newValue.replace(",","_");
+                newValue = newValue.replace(".","_");
+                newValue = newValue.replace("-","_");
+
+                SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+                SQLiteDatabase db = helperDb.getWritableDatabase();
+                db.beginTransaction();
+                try {
+                    helperDb.getWritableDatabase().execSQL("UPDATE " + tempTableName + " SET " + sqlUtils.getColumnNames(tempTableName)[col] + " = '" + newValue+"'" + " WHERE " + "ROWID = " + row);
+                    updateTableGrid();
+                    db.setTransactionSuccessful();
+                }
+                finally {
+                    db.endTransaction();
+                }
+
+
+            }
+        });
+        builder.setNeutralButton("Cancel", null);
+        builder.show();
+    }
+
+    private void normalizeColumn(int col) {
+        SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+        if(sqlUtils.getColumnType(tempTableName, sqlUtils.getColumnNames(tempTableName)[col]) == ColumnType.NUMERIC){
+            Cursor cursor = helperDb.getReadableDatabase().query(tempTableName, new String[]{sqlUtils.getColumnNames(tempTableName)[col]}, null, null, null, null, null);
+            double max = Double.MIN_VALUE;
+            if(cursor != null && cursor.moveToFirst()){
+                do{
+
+                    if(cursor.getDouble(Math.abs(cursor.getColumnIndex(sqlUtils.getColumnNames(tempTableName)[col]))) > max){
+                        max = cursor.getDouble(Math.abs(cursor.getColumnIndex(sqlUtils.getColumnNames(tempTableName)[col])));
+                    }
+                }while(cursor.moveToNext());
+            }
+            cursor.close();
+
+            cursor = helperDb.getReadableDatabase().query(tempTableName, new String[]{sqlUtils.getColumnNames(tempTableName)[col]}, null, null, null, null, null);
+            int i = 0;
+            if(cursor != null && cursor.moveToFirst()){
+                do{
+                    double value = cursor.getDouble(Math.abs(cursor.getColumnIndex(sqlUtils.getColumnNames(tempTableName)[col])));
+                    value = value/max;
+                    ContentValues cv = new ContentValues();
+                    cv.put(sqlUtils.getColumnNames(tempTableName)[col], value);
+                    helperDb.getWritableDatabase().update(tempTableName, cv, "ROWID = ?", new String[]{String.valueOf(i)});
+                    i++;
+                }while(cursor.moveToNext());
+            }
+            updateTableGrid();
+        }
+        else {
+            Toast.makeText(getContext(), "Column is not numeric", Toast.LENGTH_SHORT).show();
+        }
     }
     private void deleteColumn(int col){
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
@@ -173,7 +268,6 @@ public class EditorFragment extends Fragment implements TableAdapter.OnCellClick
         builder.setNeutralButton("Cancel", null);
         builder.show();
     }
-
     private void updateTableGrid(){
         SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
         data = sqlUtils.toStringArray(tempTableName);
@@ -182,9 +276,51 @@ public class EditorFragment extends Fragment implements TableAdapter.OnCellClick
         gridRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), data[0].length));
         tableAdapter.notifyDataSetChanged();
     }
-
     private void filterColumn(int col){
         Toast.makeText(getContext(), "current an excess feature", Toast.LENGTH_SHORT).show();
+    }
+    private void editColumnName(int col){
+        SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+
+        View view = getLayoutInflater().inflate(R.layout.edit_column_name_dialog, null);
+        TextInputLayout editText = view.findViewById(R.id.edit_column_name_input);
+        editText.getEditText().setHint(sqlUtils.getColumnNames(tempTableName)[col]);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+        builder.setTitle("Edit column name");
+        builder.setView(view);
+        builder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newColumnName = editText.getEditText().getText().toString();
+                if(newColumnName.isEmpty()){
+                    Toast.makeText(getContext(), "Column name cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                newColumnName = newColumnName.replace(" ","_");
+                newColumnName = newColumnName.replace(",","_");
+                newColumnName = newColumnName.replace(".","_");
+                newColumnName = newColumnName.replace("-","_");
+
+                SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
+                SQLiteDatabase db = helperDb.getWritableDatabase();
+                db.beginTransaction();
+                try {
+                    helperDb.getWritableDatabase().execSQL("ALTER TABLE " + tempTableName + " RENAME COLUMN " + sqlUtils.getColumnNames(tempTableName)[col] + " TO " + newColumnName);
+                    updateTableGrid();
+                    db.setTransactionSuccessful();
+                }
+                catch (Exception e){
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                finally {
+                    db.endTransaction();
+                }
+
+
+            }
+        });
+        builder.setNeutralButton("Cancel", null);
+        builder.show();
     }
     private void oneHotEncodingColumn(int col) {
         SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
@@ -197,7 +333,7 @@ public class EditorFragment extends Fragment implements TableAdapter.OnCellClick
 
             if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    values.add(cursor.getString(cursor.getColumnIndex(columnName)));
+                    values.add(cursor.getString(Math.abs(cursor.getColumnIndex(columnName))));
                 } while (cursor.moveToNext());
                 cursor.close();
             }
@@ -233,7 +369,6 @@ public class EditorFragment extends Fragment implements TableAdapter.OnCellClick
         }
     }
 
-
     private void startTableEditing(){
         tempTableName = BaseActivity.datasetModel.getDatasetNickname()+"_edit";
         SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
@@ -257,6 +392,25 @@ public class EditorFragment extends Fragment implements TableAdapter.OnCellClick
         SQLUtils sqlUtils = new SQLUtils(helperDb.getWritableDatabase());
         sqlUtils.dropTable(tempTableName);
         data = BaseActivity.datasetModel.getData(getContext());
+    }
+
+    private void highlightColumn(int col){
+        tableAdapter.addHighlightedColumn(col);
+    }
+
+    private void highlightRow(int row){
+        tableAdapter.addHighlightedRow(row);
+    }
+
+    private void highlightCell(int row, int col)
+    {
+        tableAdapter.setHighlightedCell(row, col);
+    }
+
+    private void resetHighlight(){
+        tableAdapter.resetHighlightedRows();
+        tableAdapter.resetHighlightedColumns();
+        tableAdapter.resetHighlightedCell();
     }
     @Override
     public void onDestroy() {

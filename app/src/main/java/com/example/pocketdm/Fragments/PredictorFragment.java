@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 import com.example.pocketdm.Activities.BaseActivity;
 import com.example.pocketdm.Adapters.InputsAdapter;
-import com.example.pocketdm.Adapters.PredictorColumnsAdapter;
+import com.example.pocketdm.Adapters.ColumnsCheckboxAdapter;
 import com.example.pocketdm.Enums.ColumnType;
 import com.example.pocketdm.MachineLearning.KNearestNeighbor;
 import com.example.pocketdm.R;
@@ -28,7 +28,7 @@ import com.google.android.material.slider.Slider;
 
 import java.util.ArrayList;
 
-public class PredictorFragment extends Fragment implements PredictorColumnsAdapter.OnColumnCheckedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
+public class PredictorFragment extends Fragment implements ColumnsCheckboxAdapter.OnColumnCheckedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
     RecyclerView columnsRecyclerView, inputsRecyclerView;
     RadioGroup indexColumnRadioGroup;
@@ -36,7 +36,7 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
     TextView outputLabel;
     Button predictorClassifyBtn, predictorRegressionBtn;
 
-    PredictorColumnsAdapter columnsAdapter;
+    ColumnsCheckboxAdapter columnsAdapter;
     InputsAdapter inputsAdapter;
     ArrayList<String> selectedColumns;
     HelperDb helperDb;
@@ -94,7 +94,7 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
             SQLUtils sqlUtils = new SQLUtils(helperDb.getReadableDatabase());
             String[] columns = sqlUtils.getColumnNames(BaseActivity.datasetModel.getDatasetNickname());
 
-            columnsAdapter = new PredictorColumnsAdapter(getContext(), columns, this);
+            columnsAdapter = new ColumnsCheckboxAdapter(getContext(), columns, this);
             columnsRecyclerView.setAdapter(columnsAdapter);
             columnsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -105,7 +105,7 @@ public class PredictorFragment extends Fragment implements PredictorColumnsAdapt
     }
 
     @Override
-    public void onColumnChecked(int position, boolean isChecked) {
+    public void onColumnChecked(View view,int position, boolean isChecked, String columnName) {
         if (isChecked) {
             selectedColumns.add(columnsAdapter.columns[position]);
         } else {

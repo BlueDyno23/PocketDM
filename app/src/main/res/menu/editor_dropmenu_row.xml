@@ -4,4 +4,8 @@
         android:id="@+id/action_delete_row"
         android:icon="@drawable/baseline_delete_24"
         android:title="@string/action_delete" />
+    <item
+        android:id="@+id/action_edit_value"
+        android:icon="@drawable/baseline_delete_24"
+        android:title="@string/edit_value" />
 </menu>

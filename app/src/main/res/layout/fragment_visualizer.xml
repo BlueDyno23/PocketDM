@@ -7,20 +7,59 @@
     android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_weight="5"
         android:orientation="vertical">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/visualizer_dynamic_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Categorials:"/>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/visualizer_categorial_rv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Numerics:"/>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/visualizer_numerical_rv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/plotBtn"
+            android:text="Plot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.Material3.Button.ElevatedButton"/>
         <LinearLayout
             android:id="@+id/visualizer_linear_layout"
             android:layout_width="match_parent"
@@ -29,6 +68,10 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <com.anychart.AnyChartView
+                android:id="@+id/chartView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
         </LinearLayout>
 
     </LinearLayout>

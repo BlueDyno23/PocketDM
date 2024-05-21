@@ -11,21 +11,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pocketdm.Activities.BaseActivity;
-import com.example.pocketdm.Enums.ColumnType;
 import com.example.pocketdm.R;
 import com.example.pocketdm.Utilities.HelperDb;
 import com.example.pocketdm.Utilities.SQLUtils;
 
-public class PredictorColumnsAdapter extends RecyclerView.Adapter<PredictorColumnsAdapter.ViewHolder> {
+public class ColumnsCheckboxAdapter extends RecyclerView.Adapter<ColumnsCheckboxAdapter.ViewHolder> {
 
     public String[] columns;
     private Context context;
     private OnColumnCheckedListener onColumnCheckedListener;
     public interface OnColumnCheckedListener {
-        void onColumnChecked(int position, boolean isChecked);
+        void onColumnChecked(View view ,int position, boolean isChecked, String columnName);
     }
 
-    public PredictorColumnsAdapter(Context context, String[] columns, OnColumnCheckedListener onColumnCheckedListener) {
+    public ColumnsCheckboxAdapter(Context context, String[] columns, OnColumnCheckedListener onColumnCheckedListener) {
         this.columns = columns;
         this.onColumnCheckedListener = onColumnCheckedListener;
         this.context = context;
@@ -41,7 +40,7 @@ public class PredictorColumnsAdapter extends RecyclerView.Adapter<PredictorColum
             columnLabel = itemView.findViewById(R.id.predictorColumnName);
             columnType = itemView.findViewById(R.id.predictorColumnType);
             columnCheckbox = itemView.findViewById(R.id.predictorColumnCheckbox);
-            columnCheckbox.setOnCheckedChangeListener((v, isChecked) -> onColumnCheckedListener.onColumnChecked(getAdapterPosition(), isChecked));
+            columnCheckbox.setOnCheckedChangeListener((v, isChecked) -> onColumnCheckedListener.onColumnChecked(itemView,getAdapterPosition(), isChecked, columns[getAdapterPosition()]));
         }
     }
     @NonNull
@@ -62,5 +61,27 @@ public class PredictorColumnsAdapter extends RecyclerView.Adapter<PredictorColum
         return columns.length;
     }
 
+    public void uncheckById(int id) {
+        onColumnCheckedListener.onColumnChecked(null, id, false, columns[id]);
+        notifyDataSetChanged();
+    }
+
+    public void checkById(int id) {
+        onColumnCheckedListener.onColumnChecked(null, id, true, columns[id]);
+        notifyDataSetChanged();
+    }
+
+    public void checkAll() {
+        for (int i = 0; i < columns.length; i++) {
+            onColumnCheckedListener.onColumnChecked(null, i, true, columns[i]);
+        }
+        notifyDataSetChanged();
+    }
+    public void uncheckAll() {
+        for (int i = 0; i < columns.length; i++) {
+            onColumnCheckedListener.onColumnChecked(null, i, false, columns[i]);
+        }
+        notifyDataSetChanged();
+    }
 
 }

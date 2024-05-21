@@ -34,4 +34,7 @@
     <string name="version">Version</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
+    <string name="edit_column_name">Edit Column Name</string>
+    <string name="edit_value">Edit Value</string>
+    <string name="normalize">Normalize Column</string>
 </resources>
