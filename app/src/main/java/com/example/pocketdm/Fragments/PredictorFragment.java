@@ -79,7 +79,6 @@ public class PredictorFragment extends Fragment implements ColumnsCheckboxAdapte
         inputsRecyclerView = view.findViewById(R.id.predictor_inputs);
         indexColumnRadioGroup = view.findViewById(R.id.predictor_index_column);
         indexColumnRadioGroup.setOnCheckedChangeListener(this);
-        trainPercentageSlider = view.findViewById(R.id.predictor_percentage_slider);
         outputLabel = view.findViewById(R.id.predictor_output_text);
         predictorClassifyBtn = view.findViewById(R.id.predictor_classify_btn);
         predictorClassifyBtn.setOnClickListener(this);
