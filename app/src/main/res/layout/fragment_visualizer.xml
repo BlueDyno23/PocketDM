@@ -54,6 +54,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical">
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/plotBtn"
             android:text="Plot"
@@ -67,11 +68,15 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:padding="16dp">
-
+            <ProgressBar
+                android:id="@+id/chartProgressBar"
+                android:layout_width="match_parent"
+                android:layout_height="18dp" />
             <com.anychart.AnyChartView
                 android:id="@+id/chartView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+
         </LinearLayout>
 
     </LinearLayout>

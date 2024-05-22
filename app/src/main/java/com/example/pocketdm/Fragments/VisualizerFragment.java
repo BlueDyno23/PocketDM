@@ -17,6 +17,7 @@ import com.anychart.AnyChartView;
 import com.anychart.chart.common.dataentry.DataEntry;
 import com.anychart.chart.common.dataentry.ValueDataEntry;
 import com.anychart.charts.Scatter;
+import com.anychart.data.Mapping;
 import com.example.pocketdm.Activities.BaseActivity;
 import com.example.pocketdm.Adapters.ColumnsCheckboxAdapter;
 import com.example.pocketdm.Enums.ColumnType;
@@ -65,6 +66,7 @@ public class VisualizerFragment extends Fragment implements View.OnClickListener
 
     private void initializeViews(View view) {
         anyChartView = view.findViewById(R.id.chartView);
+        anyChartView.setProgressBar(view.findViewById(R.id.chartProgressBar));
 
         categorialsRecyclerView = view.findViewById(R.id.visualizer_categorial_rv);
         numericalsRecyclerView = view.findViewById(R.id.visualizer_numerical_rv);

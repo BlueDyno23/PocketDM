@@ -30,7 +30,7 @@ public class SQLUtils {
                 .append(" (");
 
         for (int i = 0; i < columns.length; i++) {
-            String sanitizedColumn = columns[i].replace('.', '_');
+            String sanitizedColumn = getSanitizedName(columns[i]);
             createTableQuery.append(sanitizedColumn);
             if (i < columns.length - 1) {
                 createTableQuery.append(", ");
@@ -41,7 +41,20 @@ public class SQLUtils {
         database.execSQL(createTableQuery.toString());
     }
 
-
+    private String getSanitizedName(String columnName) {
+        String sanitizedColumn = columnName.replace('.', '_');
+        sanitizedColumn = sanitizedColumn.replace(' ', '_');
+        sanitizedColumn = sanitizedColumn.replace('/', '_');
+        sanitizedColumn = sanitizedColumn.replace("\"", "");
+        sanitizedColumn = sanitizedColumn.replace("\\", "");
+        if(Character.isDigit(sanitizedColumn.toCharArray()[0])){
+            sanitizedColumn = "_" + sanitizedColumn;
+        }
+        if(sanitizedColumn.isEmpty()){
+            sanitizedColumn = "EMPTY";
+        }
+        return sanitizedColumn;
+    }
     /*public long insertData(String tableName, ContentValues values) {
         return database.insert(tableName, null, values);
     }*/
@@ -109,9 +122,9 @@ public class SQLUtils {
         String[] tableRows = raw.split("\n");
         String[] columnNames = tableRows[0].split(",");
 
-        // Replace dots with underscores in column names
         for (int i = 0; i < columnNames.length; i++) {
-            columnNames[i] = columnNames[i].replace('.', '_');
+            String sanitizedColumn = getSanitizedName(columnNames[i]);
+            columnNames[i] = sanitizedColumn;
         }
 
         createTable(tableName, columnNames);
@@ -120,7 +133,8 @@ public class SQLUtils {
             ContentValues cv = new ContentValues();
             String[] rowValues = tableRows[i].split(",");
             for (int j = 0; j < columnNames.length; j++) {
-                cv.put(columnNames[j], rowValues[j]);
+                String value = rowValues[j];
+                cv.put(columnNames[j], value);
             }
             insertData(tableName, cv);
         }
