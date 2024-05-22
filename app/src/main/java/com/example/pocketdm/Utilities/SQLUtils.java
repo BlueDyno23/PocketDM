@@ -41,8 +41,75 @@ public class SQLUtils {
         database.execSQL(createTableQuery.toString());
     }
 
+    public void fillTable(Context context, String tableName, Uri fileAdress) {
+        String raw = FileUtils.getRawFileContentFromUri(context, fileAdress);
+        String[] tableRows = raw.split("\n");
+        String[] columnNames = tableRows[0].split(",");
+
+        //for columns
+        for (int i = 0; i < columnNames.length; i++) {
+            String sanitizedColumn = getSanitizedName(columnNames[i]);
+            columnNames[i] = sanitizedColumn;
+        }
+
+        createTable(tableName, columnNames);
+        // for values
+        for (int i = 1; i < tableRows.length; i++) {
+            ContentValues cv = new ContentValues();
+            String[] rowValues = tableRows[i].split(",");
+            for (int j = 0; j < columnNames.length; j++) {
+                String value = rowValues[j];
+                value = value.replace("\"", "");
+                value = value.replace("\\", "");
+                cv.put(columnNames[j], value);
+            }
+            insertData(tableName, cv);
+        }
+    }
+
+    public void insertData(String tableName, ContentValues values) {
+        StringBuilder insertQuery = new StringBuilder();
+        insertQuery.append("INSERT INTO ")
+                .append(tableName)
+                .append(" (");
+
+        String[] columns = values.keySet().toArray(new String[0]);
+        for (int i = 0; i < columns.length; i++) {
+            insertQuery.append(columns[i]);
+            if (i < columns.length - 1) {
+                insertQuery.append(", ");
+            }
+        }
+
+        insertQuery.append(") VALUES (");
+        for (int i = 0; i < columns.length; i++) {
+            insertQuery.append("?");
+            if (i < columns.length - 1) {
+                insertQuery.append(", ");
+            }
+        }
+        insertQuery.append(");");
+
+        SQLiteStatement statement = database.compileStatement(insertQuery.toString());
+        for (int i = 0; i < columns.length; i++) {
+            Object value = values.get(columns[i]);
+            if (value instanceof String) {
+                statement.bindString(i + 1, (String) value);
+            } else if (value instanceof Integer) {
+                statement.bindLong(i + 1, (Integer) value);
+            } else if (value instanceof Double) {
+                statement.bindDouble(i + 1, (Double) value);
+            } else if (value == null) {
+                statement.bindNull(i + 1);
+            }
+        }
+        statement.executeInsert();
+    }
     private String getSanitizedName(String columnName) {
         String sanitizedColumn = columnName.replace('.', '_');
+        if(sanitizedColumn.isEmpty()){
+            sanitizedColumn = "EMPTY";
+        }
         sanitizedColumn = sanitizedColumn.replace(' ', '_');
         sanitizedColumn = sanitizedColumn.replace('/', '_');
         sanitizedColumn = sanitizedColumn.replace("\"", "");
@@ -50,9 +117,7 @@ public class SQLUtils {
         if(Character.isDigit(sanitizedColumn.toCharArray()[0])){
             sanitizedColumn = "_" + sanitizedColumn;
         }
-        if(sanitizedColumn.isEmpty()){
-            sanitizedColumn = "EMPTY";
-        }
+
         return sanitizedColumn;
     }
     /*public long insertData(String tableName, ContentValues values) {
@@ -117,67 +182,7 @@ public class SQLUtils {
 
         return columnNames;
     }
-    public void fillTable(Context context, String tableName, Uri fileAdress) {
-        String raw = FileUtils.getRawFileContentFromUri(context, fileAdress);
-        String[] tableRows = raw.split("\n");
-        String[] columnNames = tableRows[0].split(",");
 
-        for (int i = 0; i < columnNames.length; i++) {
-            String sanitizedColumn = getSanitizedName(columnNames[i]);
-            columnNames[i] = sanitizedColumn;
-        }
-
-        createTable(tableName, columnNames);
-
-        for (int i = 1; i < tableRows.length; i++) {
-            ContentValues cv = new ContentValues();
-            String[] rowValues = tableRows[i].split(",");
-            for (int j = 0; j < columnNames.length; j++) {
-                String value = rowValues[j];
-                cv.put(columnNames[j], value);
-            }
-            insertData(tableName, cv);
-        }
-    }
-
-    public void insertData(String tableName, ContentValues values) {
-        StringBuilder insertQuery = new StringBuilder();
-        insertQuery.append("INSERT INTO ")
-                .append(tableName)
-                .append(" (");
-
-        String[] columns = values.keySet().toArray(new String[0]);
-        for (int i = 0; i < columns.length; i++) {
-            insertQuery.append(columns[i]);
-            if (i < columns.length - 1) {
-                insertQuery.append(", ");
-            }
-        }
-
-        insertQuery.append(") VALUES (");
-        for (int i = 0; i < columns.length; i++) {
-            insertQuery.append("?");
-            if (i < columns.length - 1) {
-                insertQuery.append(", ");
-            }
-        }
-        insertQuery.append(");");
-
-        SQLiteStatement statement = database.compileStatement(insertQuery.toString());
-        for (int i = 0; i < columns.length; i++) {
-            Object value = values.get(columns[i]);
-            if (value instanceof String) {
-                statement.bindString(i + 1, (String) value);
-            } else if (value instanceof Integer) {
-                statement.bindLong(i + 1, (Integer) value);
-            } else if (value instanceof Double) {
-                statement.bindDouble(i + 1, (Double) value);
-            } else if (value == null) {
-                statement.bindNull(i + 1);
-            }
-        }
-        statement.executeInsert();
-    }
 
     public String[][] toStringArray(String datasetName) {
         Cursor cursor = database.rawQuery("SELECT * FROM " + datasetName, null);
